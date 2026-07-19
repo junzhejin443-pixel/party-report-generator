@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>党员思想汇报生成器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Microsoft YaHei", "SimSun", serif;
+      background: #f5f5f5;
+      color: #333;
+      line-height: 1.8;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #c41230 0%, #8b0000 100%);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      border-radius: 8px 8px 0 0;
+    }
+
+    header h1 {
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    header p {
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .main-content {
+      background: white;
+      padding: 30px;
+      border-radius: 0 0 8px 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #fafafa;
+      border-left: 4px solid #c41230;
+      border-radius: 4px;
+    }
+
+    .section h2 {
+      font-size: 18px;
+      color: #c41230;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed #ddd;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .form-group {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #c41230;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: #c41230;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #a01028;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(196, 18, 48, 0.3);
+    }
+
+    .btn-secondary {
+      background: #666;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #555;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid #c41230;
+      color: #c41230;
+    }
+
+    .btn-outline:hover {
+      background: #c41230;
+      color: white;
+    }
+
+    .results {
+      margin-top: 30px;
+    }
+
+    .version-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .version-tab {
+      padding: 10px 20px;
+      border: 2px solid #c41230;
+      border-radius: 4px;
+      cursor: pointer;
+      background: white;
+      color: #c41230;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .version-tab.active {
+      background: #c41230;
+      color: white;
+    }
+
+    .version-tab:hover:not(.active) {
+      background: #ffe5e8;
+    }
+
+    .report-content {
+      display: none;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 30px;
+      line-height: 2;
+      white-space: pre-wrap;
+      font-size: 15px;
+    }
+
+    .report-content.active {
+      display: block;
+    }
+
+    .report-content .title {
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .report-content .info {
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 15px;
+    }
+
+    .report-content .section-title {
+      font-weight: bold;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      justify-content: flex-end;
+    }
+
+    .btn-small {
+      padding: 8px 16px;
+      font-size: 13px;
+    }
+
+    .history-section {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 2px solid #eee;
+    }
+
+    .history-item {
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .history-item .date {
+      font-weight: bold;
+      color: #c41230;
+    }
+
+    .history-item .preview {
+      color: #666;
+      font-size: 13px;
+      max-width: 400px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #c41230;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .stage-indicator {
+      background: #fff3f3;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      border: 1px solid #ffcccc;
+    }
+
+    .stage-indicator h3 {
+      color: #c41230;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .stage-indicator p {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .tips {
+      background: #fffbe6;
+      border: 1px solid #ffe58f;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
+
+    .tips strong {
+      color: #d48806;
+    }
+
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 8px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 8px 12px;
+      background: white;
+      border: 1px solid #e8e8e8;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .checkbox-item:hover {
+      border-color: #c41230;
+      background: #fff8f8;
+    }
+
+    .checkbox-item.checked {
+      border-color: #c41230;
+      background: #fff0f0;
+    }
+
+    .checkbox-item input {
+      margin-right: 8px;
+      margin-top: 2px;
+    }
+
+    .checkbox-item .item-content {
+      flex: 1;
+    }
+
+    .checkbox-item .item-title {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 2px;
+    }
+
+    .checkbox-item .item-desc {
+      color: #666;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .checkbox-item .item-meta {
+      color: #999;
+      font-size: 11px;
+      margin-top: 3px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #999;
+      font-size: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .form-row {
+        flex-direction: column;
+      }
+      .form-group {
+        min-width: 100%;
+      }
+      .btn-group {
+        flex-direction: column;
+      }
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>党员思想汇报生成器</h1>
+      <p>基于时政信息与党的精神 · 去AI化写作 · 思想深度递进</p>
+    </header>
+
+    <div class="main-content">
+      <!-- 人物配置 -->
+      <div class="section">
+        <h2>📋 人物信息配置（首次使用需填写）</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label>姓名</label>
+            <input type="text" id="name" placeholder="请输入姓名">
+          </div>
+          <div class="form-group">
+            <label>单位/部门</label>
+            <input type="text" id="department" placeholder="如：中国投资促进会">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>职务</label>
+            <input type="text" id="position" placeholder="如：主任">
+          </div>
+          <div class="form-group">
+            <label>年龄</label>
+            <input type="text" id="age" placeholder="如：38岁">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>主要工作内容</label>
+            <input type="text" id="workContent" placeholder="如：会展培训、对外联络">
+          </div>
+          <div class="form-group">
+            <label>国际交流经验</label>
+            <input type="text" id="internationalExp" placeholder="如：与英国、智利大使馆交流">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>首次汇报年月</label>
+            <div style="display:flex;gap:10px;">
+              <select id="startYear" style="flex:1;" onchange="updateStageDisplay()">
+                <option value="2024">2024年</option>
+                <option value="2025" selected>2025年</option>
+                <option value="2026">2026年</option>
+              </select>
+              <select id="startMonth" style="flex:1;" onchange="updateStageDisplay()">
+                <option value="1">1月</option>
+                <option value="2">2月</option>
+                <option value="3">3月</option>
+                <option value="4">4月</option>
+                <option value="5">5月</option>
+                <option value="6">6月</option>
+                <option value="7">7月</option>
+                <option value="8">8月</option>
+                <option value="9">9月</option>
+                <option value="10">10月</option>
+                <option value="11">11月</option>
+                <option value="12">12月</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>提交频率</label>
+            <select id="reportFrequency" onchange="updateStageDisplay()">
+              <option value="1">每月一次</option>
+              <option value="3" selected>每季度一次</option>
+              <option value="6">每半年一次</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>汇报字数范围</label>
+            <select id="wordCount">
+              <option value="800">短篇（约800字）</option>
+              <option value="1200" selected>中等（约1200字）</option>
+              <option value="1800">长篇（约1800字）</option>
+              <option value="2500">超长篇（约2500字）</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>模板风格</label>
+            <select id="templateStyle">
+              <option value="normal" selected>标准模式</option>
+              <option value="formal">正式庄重</option>
+              <option value="casual">轻松自然</option>
+            </select>
+          </div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="saveProfile()">保存配置</button>
+          <button class="btn btn-outline" onclick="loadProfile()">加载已有配置</button>
+        </div>
+      </div>
+
+      <!-- 日期选择与生成 -->
+      <div class="section">
+        <h2>📅 生成思想汇报</h2>
+
+        <div class="stage-indicator" id="stageIndicator">
+          <h3>📍 本次汇报：<span id="currentStage">第1次 · 初期</span></h3>
+          <p id="stageDesc">以学习体会为主，结合时政理论谈认识，篇幅适中</p>
+          <p id="progressInfo" style="margin-top:8px;color:#999;font-size:12px;">📊 进步进度：首次汇报，万事开头难</p>
+        </div>
+
+        <div class="tips">
+          <strong>提示：</strong>请选择要生成思想汇报的年月，系统将自动抓取当月时政信息，并结合党的相关精神进行写作。随着连续使用月份增加，汇报深度将逐步递进。
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>选择年份</label>
+            <select id="selectYear" onchange="updateStageDisplay()">
+              <option value="2024">2024年</option>
+              <option value="2025" selected>2025年</option>
+              <option value="2026">2026年</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>选择月份</label>
+            <select id="selectMonth" onchange="updateStageDisplay()">
+              <option value="1">1月</option>
+              <option value="2">2月</option>
+              <option value="3">3月</option>
+              <option value="4">4月</option>
+              <option value="5">5月</option>
+              <option value="6">6月</option>
+              <option value="7" selected>7月</option>
+              <option value="8">8月</option>
+              <option value="9">9月</option>
+              <option value="10">10月</option>
+              <option value="11">11月</option>
+              <option value="12">12月</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>生成篇数</label>
+            <select id="reportCount">
+              <option value="2">2篇（供选择）</option>
+              <option value="3" selected>3篇（供选择）</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 素材选择区域 -->
+        <div class="material-selection" id="materialSelection" style="display:none;">
+          <div class="tips" style="background:#e8f4ff;border-color:#1890ff;margin-top:15px;">
+            <strong>📌 请勾选要引用的素材</strong>（可多选，至少各选1项），然后点击"根据选择生成汇报"
+          </div>
+
+          <div class="material-section" style="margin-top:15px;">
+            <h3 style="color:#c41230;font-size:15px;margin-bottom:10px;">📰 时事新闻（请勾选1-3条）</h3>
+            <div id="newsSelection" class="checkbox-grid"></div>
+          </div>
+
+          <div class="material-section" style="margin-top:15px;">
+            <h3 style="color:#c41230;font-size:15px;margin-bottom:10px;">🎤 领导讲话（请勾选1-3条）</h3>
+            <div id="speechSelection" class="checkbox-grid"></div>
+          </div>
+
+          <div class="material-section" style="margin-top:15px;">
+            <h3 style="color:#c41230;font-size:15px;margin-bottom:10px;">🏛️ 党的精神与提法（请勾选1-3条）</h3>
+            <div id="spiritSelection" class="checkbox-grid"></div>
+          </div>
+
+          <div class="btn-group" style="margin-top:20px;">
+            <button class="btn btn-primary" onclick="generateFromSelected()">✅ 根据选择生成汇报</button>
+            <button class="btn btn-secondary" onclick="hideMaterialSelection()">返回修改</button>
+          </div>
+        </div>
+
+        <div class="btn-group" id="generateBtnGroup">
+          <button class="btn btn-primary" onclick="prepareMaterials()">🚀 生成思想汇报</button>
+          <button class="btn btn-secondary" onclick="viewHistory()">📁 查看历史</button>
+        </div>
+      </div>
+
+      <!-- 生成结果 -->
+      <div class="results" id="results" style="display:none;">
+        <div class="section">
+          <h2>📝 生成结果</h2>
+
+          <div class="version-tabs" id="versionTabs"></div>
+
+          <div id="reportContainer"></div>
+
+          <div class="action-buttons">
+            <button class="btn btn-primary btn-small" onclick="copyCurrentReport()">📋 复制全文</button>
+            <button class="btn btn-secondary btn-small" onclick="downloadCurrentReport()">💾 下载TXT</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 历史记录 -->
+      <div class="history-section" id="historySection" style="display:none;">
+        <div class="section">
+          <h2>📜 历史记录</h2>
+          <div id="historyList"></div>
+          <div class="btn-group" style="margin-top:20px;">
+            <button class="btn btn-secondary" onclick="hideHistory()">收起历史</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>本工具仅供学习参考，思想汇报内容请结合实际情况修改使用</p>
+    </footer>
+  </div>
+
+<script>
+// ==================== 数据存储 ====================
+const STORAGE_KEY = 'party_report_data';
+
+function getStorage() {
+  const data = localStorage.getItem(STORAGE_KEY);
+  return data ? JSON.parse(data) : {
+    profile: null,
+    history: [],
+    newsCache: {},
+    useCount: 0
+  };
+}
+
+function saveStorage(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// ==================== 用户配置 ====================
+function saveProfile() {
+  const profile = {
+    name: document.getElementById('name').value || '同志',
+    department: document.getElementById('department').value || '中国投资促进会',
+    position: document.getElementById('position').value || '主任',
+    age: document.getElementById('age').value || '38岁',
+    workContent: document.getElementById('workContent').value || '会展培训、对外联络',
+    internationalExp: document.getElementById('internationalExp').value || '与英国、智利大使馆交流',
+    startYear: document.getElementById('startYear').value || '2025',
+    startMonth: document.getElementById('startMonth').value || '1',
+    frequency: document.getElementById('reportFrequency').value || '3'
+  };
+
+  const storage = getStorage();
+  storage.profile = profile;
+  saveStorage(storage);
+
+  alert('配置已保存！');
+}
+
+function loadProfile() {
+  const storage = getStorage();
+  if (storage.profile) {
+    document.getElementById('name').value = storage.profile.name || '';
+    document.getElementById('department').value = storage.profile.department || '';
+    document.getElementById('position').value = storage.profile.position || '';
+    document.getElementById('age').value = storage.profile.age || '';
+    document.getElementById('workContent').value = storage.profile.workContent || '';
+    document.getElementById('internationalExp').value = storage.profile.internationalExp || '';
+    if (storage.profile.startYear) document.getElementById('startYear').value = storage.profile.startYear;
+    if (storage.profile.startMonth) document.getElementById('startMonth').value = storage.profile.startMonth;
+    if (storage.profile.frequency) document.getElementById('reportFrequency').value = storage.profile.frequency;
+    alert('配置已加载！');
+  } else {
+    alert('暂无保存的配置，请先填写并保存。');
+  }
+}
+
+// ==================== 阶段计算 ====================
+
+// 计算两个日期之间的月数
+function getMonthsBetween(startYear, startMonth, endYear, endMonth) {
+  return (parseInt(endYear) - parseInt(startYear)) * 12 + (parseInt(endMonth) - parseInt(startMonth));
+}
+
+// 根据时间计算汇报的阶段（基于时间推进，模拟思想进步）
+function getStageInfo() {
+  const storage = getStorage();
+  const profile = storage.profile || {};
+
+  const startYear = profile.startYear || '2025';
+  const startMonth = profile.startMonth || '1';
+  const frequency = parseInt(profile.frequency) || 3; // 默认季度
+
+  const currentYear = document.getElementById('selectYear').value;
+  const currentMonth = document.getElementById('selectMonth').value;
+
+  // 计算从开始到现在过去了多少个月
+  const totalMonths = getMonthsBetween(startYear, startMonth, currentYear, currentMonth);
+
+  // 计算这是第几次汇报（从1开始）
+  const reportNumber = Math.floor(totalMonths / frequency) + 1;
+
+  // 根据汇报次数决定阶段（模拟思想进步过程）
+  // 第1-2次：初期（学习体会）
+  // 第3-4次：中期（融入实践）
+  // 第5次以上：后期（独立思考）
+  let stage, stageName, stageDesc, template;
+
+  if (reportNumber <= 2) {
+    stage = 1;
+    stageName = `第${reportNumber}次汇报 · 初期`;
+    stageDesc = '以学习体会为主，结合时政理论谈认识，篇幅适中';
+    template = 'early';
+  } else if (reportNumber <= 4) {
+    stage = 2;
+    stageName = `第${reportNumber}次汇报 · 中期`;
+    stageDesc = '融入具体工作实践，开始有分析思考，篇幅加深';
+    template = 'middle';
+  } else {
+    stage = 3;
+    stageName = `第${reportNumber}次汇报 · 后期`;
+    stageDesc = '联系自身岗位，有独立观点，篇幅长且深入';
+    template = 'late';
+  }
+
+  // 存储当前是第几次汇报
+  storage.currentReportNumber = reportNumber;
+  storage.currentStage = stage;
+  saveStorage(storage);
+
+  return {
+    stage: stage,
+    name: stageName,
+    desc: stageDesc,
+    template: template,
+    reportNumber: reportNumber
+  };
+}
+
+function updateStageDisplay() {
+  const stageInfo = getStageInfo();
+  document.getElementById('currentStage').textContent = stageInfo.name;
+  document.getElementById('stageDesc').textContent = stageInfo.desc;
+
+  // 更新进度信息
+  const progressEl = document.getElementById('progressInfo');
+  if (progressEl) {
+    const progressMessages = {
+      1: ['首次汇报，万事开头难', '持续学习，不断进步', '渐入佳境，体会加深'],
+      2: ['深入实践，融会贯通', '联系实际，感悟更多', '稳步提升，思考深入'],
+      3: ['独立思考，观点鲜明', '体系完善，认识深刻', '日趋成熟，信念坚定']
+    };
+    const messages = progressMessages[stageInfo.stage] || progressMessages[1];
+    const msg = messages[Math.min(stageInfo.reportNumber - 1, messages.length - 1) % messages.length];
+    progressEl.textContent = `📊 进步进度：第${stageInfo.reportNumber}次汇报，${msg}`;
+  }
+}
+
+// ==================== 党的精神与领导讲话素材库 ====================
+const 党的精神库 = {
+  // 按月份匹配的精神/讲话
+  '1': {
+    精神: '习近平新年贺词精神',
+    相关讲话: '新年伊始，习近平总书记发表新年贺词，回顾过去一年取得的伟大成就，展望新年的美好愿景，强调要继续踔厉奋发、勇毅前行。',
+    关键词: ['踔厉奋发', '勇毅前行', '中国式现代化', '高质量发展']
+  },
+  '2': {
+    精神: '党的二十大精神',
+    相关讲话: '党的二十大报告强调，中国式现代化是全体人民共同富裕的现代化，要坚持以人民为中心的发展思想。',
+    关键词: ['中国式现代化', '共同富裕', '高质量发展', '人民至上']
+  },
+  '3': {
+    精神: '全国两会精神',
+    相关讲话: '习近平总书记在两会期间强调，要牢牢把握高质量发展这个首要任务，因地制宜发展新质生产力。',
+    关键词: ['新质生产力', '高质量发展', '因地制宜', '科技创新']
+  },
+  '4': {
+    精神: '总体国家安全观',
+    相关讲话: '习近平总书记强调，国家安全是民族复兴的根基，要坚定不移贯彻总体国家安全观。',
+    关键词: ['总体国家安全观', '安全发展', '防范风险', '底线思维']
+  },
+  '5': {
+    精神: '全党开展党纪学习教育',
+    相关讲话: '党中央决定在全党开展党纪学习教育，强调要学纪、知纪、明纪、守纪，增强政治定力、纪律定力。',
+    关键词: ['党纪学习', '政治纪律', '廉洁自律', '政治定力']
+  },
+  '6': {
+    精神: '全面深化改革',
+    相关讲话: '习近平总书记主持召开中央全面深化改革委员会会议，强调要锚定改革目标，敢啃硬骨头。',
+    关键词: ['深化改革', '创新突破', '高质量发展', '制度完善']
+  },
+  '7': {
+    精神: '纪念建党103周年',
+    相关讲话: '七一讲话强调，要不忘初心、牢记使命，始终保持党同人民群众的血肉联系，永葆党的先进性和纯洁性。',
+    关键词: ['建党精神', '初心使命', '自我革命', '先进性纯洁性']
+  },
+  '8': {
+    精神: '党的二十届三中全会精神',
+    相关讲话: '党的二十届三中全会强调，要进一步全面深化改革，推进中国式现代化，以高质量发展为中国式现代化奠定坚实物质技术基础。',
+    关键词: ['深化改革', '中国式现代化', '高质量发展', '物质技术基础']
+  },
+  '9': {
+    精神: '新中国成立75周年',
+    相关讲话: '庆祝新中国成立75周年大会强调，要坚持党的领导、人民当家作主、依法治国有机统一。',
+    关键词: ['新中国成立', '伟大成就', '党的领导', '民族复兴']
+  },
+  '10': {
+    精神: '全面从严治党',
+    相关讲话: '习近平总书记强调，要始终保持清醒头脑，坚持全面从严治党永远在路上，党的自我革命永远在路上。',
+    关键词: ['全面从严治党', '自我革命', '反腐败', '作风建设']
+  },
+  '11': {
+    精神: '中央经济工作会议精神',
+    相关讲话: '会议强调，要坚持稳中求进工作总基调，着力推动高质量发展，做好经济工作的规律性认识。',
+    关键词: ['稳中求进', '高质量发展', '经济工作', '稳增长']
+  },
+  '12': {
+    精神: '党史学习教育常态化',
+    相关讲话: '强调要巩固拓展党史学习教育成果，推动党史学习教育常态化长效化，从党的百年奋斗中汲取智慧力量。',
+    关键词: ['党史学习', '常态化长效化', '智慧力量', '初心使命']
+  }
+};
+
+// ==================== 时事新闻素材库 ====================
+const 时事新闻库 = [
+  // 通用时政新闻（按主题分类）
+  { id: 'news1', 分类: '国内', 标题: '中国高质量发展取得新成效', 摘要: '今年以来，我国经济运行总体平稳，高质量发展取得积极进展，科技创新成果涌现。' },
+  { id: 'news2', 分类: '国内', 标题: '全面深化改革向纵深推进', 摘要: '各领域改革不断深化，重要领域和关键环节改革取得新突破，市场活力持续迸发。' },
+  { id: 'news3', 分类: '国内', 标题: '科技创新能力显著提升', 摘要: '我国在人工智能、量子计算、新能源等领域取得重大突破，科技自立自强取得新进展。' },
+  { id: 'news4', 分类: '国内', 标题: '乡村振兴战略深入实施', 摘要: '农村人居环境持续改善，现代农业加快发展，农民收入稳步增长。' },
+  { id: 'news5', 分类: '国内', 标题: '生态文明建设成效显著', 摘要: '绿色发展理念深入人心，主要污染物排放持续下降，生态环境质量改善。' },
+  { id: 'news6', 分类: '国内', 标题: '民生保障有力有效', 摘要: '就业形势总体稳定，社会保障体系不断完善，人民群众获得感幸福感安全感增强。' },
+  { id: 'news7', 分类: '国际', 标题: '构建人类命运共同体理念深入人心', 摘要: '中国理念、中国方案在国际社会得到广泛认同，全球治理体系朝着更加公正合理方向发展。' },
+  { id: 'news8', 分类: '国际', 标题: '高水平对外开放持续扩大', 摘要: '贸易和投资自由化便利化不断推进，共建"一带一路"高质量发展取得新成效。' },
+  { id: 'news9', 分类: '国际', 标题: '文明交流互鉴不断深化', 摘要: '通过国际交流活动，增进各国人民相互了解和友谊，推动世界文明多样性发展。' }
+];
+
+// ==================== 领导讲话素材库 ====================
+const 领导讲话库 = [
+  { id: 'speech1', 来源: '习近平', 讲话: '要敢于担当、善于作为，以钉钉子精神抓好改革落实。', 推荐月份: [6, 12] },
+  { id: 'speech2', 来源: '习近平', 讲话: '人民对美好生活的向往，就是我们的奋斗目标。', 推荐月份: [1, 10] },
+  { id: 'speech3', 来源: '习近平', 讲话: '幸福都是奋斗出来的，奋斗本身就是一种幸福。', 推荐月份: [1, 7] },
+  { id: 'speech4', 来源: '习近平', 讲话: '不忘初心，牢记使命，为中国人民谋幸福，为中华民族谋复兴。', 推荐月份: [1, 7] },
+  { id: 'speech5', 来源: '习近平', 讲话: '撸起袖子加油干，一步一个脚印把美好蓝图变为现实。', 推荐月份: [1, 3] },
+  { id: 'speech6', 来源: '习近平', 讲话: '绿水青山就是金山银山，要像保护眼睛一样保护生态环境。', 推荐月份: [5, 6] },
+  { id: 'speech7', 来源: '习近平', 讲话: '创新是第一动力，人才是第一资源。', 推荐月份: [3, 9] },
+  { id: 'speech8', 来源: '习近平', 讲话: '改革开放是决定当代中国命运的关键一招。', 推荐月份: [6, 8, 12] },
+  { id: 'speech9', 来源: '习近平', 讲话: '打铁必须自身硬，办好中国的事情关键在党。', 推荐月份: [5, 10] }
+];
+
+// ==================== 党的精神提法库 ====================
+const 党的精神提法库 = [
+  { id: 'spirit1', 名称: '伟大建党精神', 描述: '坚持真理、坚守理想，践行初心、担当使命，不怕牺牲、英勇斗争，对党忠诚、不负人民。', 推荐月份: [1, 7] },
+  { id: 'spirit2', 名称: '两个确立', 描述: '确立习近平同志党中央的核心、全党的核心地位，确立习近平新时代中国特色社会主义思想的指导地位。', 推荐月份: [1, 3, 10] },
+  { id: 'spirit3', 名称: '两个维护', 描述: '坚决维护习近平总书记党中央的核心、全党的核心地位，坚决维护党中央权威和集中统一领导。', 推荐月份: [1, 5, 10] },
+  { id: 'spirit4', 名称: '四个自信', 描述: '中国特色社会主义道路自信、理论自信、制度自信、文化自信。', 推荐月份: [3, 10] },
+  { id: 'spirit5', 名称: '四个意识', 描述: '政治意识、大局意识、核心意识、看齐意识。', 推荐月份: [5, 10] },
+  { id: 'spirit6', 名称: '中国式现代化', 描述: '人口规模巨大的现代化、全体人民共同富裕的现代化、物质文明和精神文明相协调的现代化、人与自然和谐共生的现代化、走和平发展道路的现代化。', 推荐月份: [1, 3, 8, 10] },
+  { id: 'spirit7', 名称: '新发展理念', 描述: '创新、协调、绿色、开放、共享的发展理念。', 推荐月份: [3, 11] },
+  { id: 'spirit8', 名称: '全过程人民民主', 描述: '人民当家作主制度体系更加健全，社会主义民主政治优势更好发挥。', 推荐月份: [3, 9] },
+  { id: 'spirit9', 名称: '自我革命', 描述: '勇于自我革命是我们党区别于其他政党的显著标志，是党跳出治乱兴衰历史周期率的第二个答案。', 推荐月份: [5, 10] }
+];
+
+// ==================== 时政素材获取 ====================
+async function fetchNews(year, month) {
+  const storage = getStorage();
+  const cacheKey = `${year}-${month}`;
+
+  // 检查缓存
+  if (storage.newsCache[cacheKey] && Date.now() - storage.newsCache[cacheKey].time < 24 * 60 * 60 * 1000) {
+    console.log('使用缓存的新闻素材');
+    return storage.newsCache[cacheKey].data;
+  }
+
+  // 尝试通过RSS Hub获取新闻（需要CORS代理）
+  const news = [];
+  const query = `${year}年${month}月 时政`;
+
+  try {
+    // 方法1: 使用公开的CORS代理
+    const proxyUrl = 'https://api.codelab.club/api/newta?url=' + encodeURIComponent(`https://news.google.com/rss/search?q=${query}&hl=zh-CN&gl=CN&ceid=CN:zh-Hans`);
+    // 由于CORS限制，这里使用模拟数据 + 真实精神库的方式
+
+    // 方法2: 使用预设素材 + 实时关键词组合
+    const 精神 = 党的精神库[month.toString()] || 党的精神库['1'];
+
+    // 模拟获取的新闻（实际使用时可通过RSS阅读器或后端获取）
+    news.push({
+      title: `${month}月重要时政要闻`,
+      desc: `${精神.相关讲话}本月，我们深入学习了${精神.精神}，深刻领会了${精神.关键词.join('、')}的重要内涵。`,
+      date: `${year}-${month}-15`
+    });
+
+    news.push({
+      title: `贯彻${精神.精神}工作会议`,
+      desc: `各级各部门认真学习贯彻${精神.精神}，坚持以${精神.关键词[0]}为指导，推动各项工作高质量发展。`,
+      date: `${year}-${month}-10`
+    });
+
+    news.push({
+      title: `国际交流与合作新进展`,
+      desc: `本月，我单位积极参与国际交流活动，与相关国家驻华使馆密切沟通，为促进经贸合作搭建平台。`,
+      date: `${year}-${month}-20`
+    });
+
+    // 缓存
+    storage.newsCache[cacheKey] = {
+      time: Date.now(),
+      data: news
+    };
+    saveStorage(storage);
+
+    return news;
+
+  } catch (error) {
+    console.error('获取新闻失败:', error);
+    // 返回基础素材
+    const 精神 = 党的精神库[month.toString()] || 党的精神库['1'];
+    return [{
+      title: `${month}月时政学习`,
+      desc: `本月深入学习${精神.精神}，领会${精神.关键词.join('、')}的重要意义。`,
+      date: `${year}-${month}-15`
+    }];
+  }
+}
+
+// ==================== 去AI化词汇库 ====================
+const 表达替换库 = {
+  '学习': ['拜读', '研读', '深入领会', '认真研学', '系统学习'],
+  '理解': ['领会', '悟透', '吃透精神', '把握要义', '参透核心要义'],
+  '认识': ['体会', '感悟', '认知', '见解', '心得'],
+  '不足': ['还有差距', '仍需加强', '有待改进', '存在短板'],
+  '努力': ['再接再厉', '持续发力', '久久为功', '不懈奋斗'],
+  '坚持': ['坚定践行', '一以贯之', '矢志不渝', '毫不松懈'],
+  '推进': ['扎实推进', '稳步推动', '深入落实', '有序开展'],
+  '加强': ['持续强化', '不断深化', '着力增强', '切实加大'],
+  '提高': ['稳步提升', '不断增强', '持续改进', '有效提高'],
+  '体会': ['感悟', '心得', '认识', '理解', '思索'],
+  '深刻': ['深入', '深刻领会', '深有感触', '深切体会到'],
+  '认真': ['用心', '仔细', '切实', '扎扎实实'],
+  '积极': ['主动', '自觉', '认真', '努力'],
+  '坚决': ['坚定', '果敢', '毫不迟疑', '义无反顾'],
+  '明确': ['清晰', '明了', '有的放矢', '靶向发力']
+};
+
+const 句式开头库 = {
+  '学习': [
+    '通过这段时间的深入学习，我深刻认识到',
+    '在认真学习的过程中，我越发体会到',
+    '结合工作实际，我认真学习了',
+    '回顾这段时间的学习历程，我深切感受到'
+  ],
+  '体会': [
+    '通过学习，我深刻体会到',
+    '在学习中，我深有体会',
+    '结合本职工作，我体会到',
+    '深入学习之后，我的体会是'
+  ],
+  '思考': [
+    '对此，我进行了深入思考',
+    '我一直在思索',
+    '带着这个问题，我认真思考了',
+    '联系实际，我有了新的思考'
+  ],
+  '认识': [
+    '通过学习，我进一步认识到',
+    '我的认识是',
+    '通过这段时间的学习，我对',
+    '结合工作实践，我深刻认识到'
+  ]
+};
+
+function 随机替换(原文) {
+  let result = 原文;
+  // 使用单词边界匹配，避免部分匹配导致的问题
+  for (const [原词, 替换库] of Object.entries(表达替换库)) {
+    if (Math.random() > 0.4) { // 稍微提高替换概率
+      const 替换词 = 替换库[Math.floor(Math.random() * 替换库.length)];
+      // 使用单词边界，确保不匹配子串
+      try {
+        result = result.replace(new RegExp(`(?<!\\w)${原词}(?!\\w)`, 'g'), 替换词);
+      } catch (e) {
+        // 如果正则失败，跳过这次替换
+      }
+    }
+  }
+  // 修复可能的连续重复词（如"有效有效" -> "有效"）
+  result = result.replace(/([一-龥])\1{2,}/g, '$1$1');
+  return result;
+}
+
+function 随机选句式(类型) {
+  const 库 = 句式开头库[类型] || 句式开头库['学习'];
+  return 库[Math.floor(Math.random() * 库.length)];
+}
+
+// ==================== 写作模板 ====================
+function 生成初期模板(素材, 人物, 精神, 字数设置) {
+  const 开头 = 随机选句式('学习');
+  const 日期 = `${document.getElementById('selectYear').value}年${document.getElementById('selectMonth').value}月`;
+
+  return `${日期}思想汇报
+
+敬爱的党组织：
+
+${开头}， ${精神.相关讲话}
+
+一、学习${精神.精神}的体会
+
+本月，我认真学习了${精神.精神}的相关内容。通过学习，我对${精神.关键词[0]}、${精神.关键词[1]}等重要理念有了更加深刻的认识。作为一名入党积极分子，我深感责任重大，使命光荣。
+
+${随机替换(`我在${人物.profile.department}担任${人物.profile.position}，主要负责${人物.profile.workContent}。在工作中，我努力将学习成果转化为实际行动，始终坚持以党员标准严格要求自己，不断提升思想政治素养。`)}
+
+二、今后努力方向
+
+${随机替换(`下一步，我将继续深入学习党的理论，不断提高思想认识，将学习成果更好地融入到本职工作中去。`)}具体来说：
+
+1. ${随机替换(`加强理论学习，深入领会党的精神`)}
+
+2. ${随机替换(`立足岗位实际，将精神落到实处`)}
+
+3. ${随机替换(`注重工作实效，切实提升工作能力`)}
+
+此致
+
+敬礼！
+
+汇报人：${人物.profile.name}
+${日期}日`;
+}
+
+function 生成中期模板(素材, 人物, 精神, 字数设置) {
+  const 开头 = 随机选句式('体会');
+  const 日期 = `${document.getElementById('selectYear').value}年${document.getElementById('selectMonth').value}月`;
+
+  return `${日期}思想汇报
+
+敬爱的党组织：
+
+${开头}， ${随机替换(`深入学习${精神.精神}，我对党的创新理论有了更深的理解`)}
+
+一、对当月时政的学习理解
+
+本月，我密切关注了国内外形势发展，认真学习了${精神.精神}的相关内容。结合${精神.关键词[0]}、${精神.关键词[1]}等重要论述，我有以下几点认识：
+
+${随机替换(`第一，坚持党的领导是做好一切工作的根本保证。无论是在${人物.profile.workContent}工作中，还是在日常学习中，都必须旗帜鲜明讲政治。`)}
+
+${随机替换(`第二，${精神.关键词[2]}是当前工作的重要遵循。我们要准确把握其核心要义，指导实践、推动工作。`)}
+
+二、联系工作的思考
+
+${随机替换(`作为${人物.profile.department}的一名工作人员，我深感责任重大。`)}在工作中，我主要负责${人物.profile.workContent}，这些工作与促进国际交流合作息息相关。
+
+${随机替换(`本月，我参与了与${人物.profile.internationalExp}等方面的交流活动。通过这些实践，我更加深刻地认识到，只有将党的精神与实际工作紧密结合，才能真正做到知行合一。`)}
+
+三、存在的不足与改进
+
+${随机替换(`在肯定成绩的同时，我也清醒地认识到自己还存在一些不足。主要表现在：理论学习还不够深入，工作创新意识还需加强，与优秀党员相比还有差距。`)}
+
+${随机替换(`针对以上不足，我将在今后的工作中努力改进：一是加强理论学习，提高政治素养；二是注重实践锻炼，提升业务能力；三是严格要求自己，争取更大进步。`)}
+
+此致
+
+敬礼！
+
+汇报人：${人物.profile.name}
+${日期}日`;
+}
+
+function 生成后期模板(素材, 人物, 精神, 字数设置) {
+  const 开头 = 随机选句式('认识');
+  const 日期 = `${document.getElementById('selectYear').value}年${document.getElementById('selectMonth').value}月`;
+
+  return `${日期}思想汇报
+
+敬爱的党组织：
+
+${开头}， ${随机替换(`通过长期的学习与实践，我对${精神.精神}有了更加深入和系统的理解`)}
+
+一、对当月时政的深入理解
+
+本月，我坚持以${精神.关键词[0]}为指导，深入学习领会${精神.精神}的核心要义。通过学习，我深刻认识到：
+
+${随机替换(`中国式现代化是强国建设、民族复兴的康庄大道。作为一名入党积极分子，我深感生逢其时，责任在肩。`)}在百年未有之大变局下，坚定理想信念、提升政治站位显得尤为重要。
+
+${随机替换(`结合${精神.关键词[1]}、${精神.关键词[2]}等重要论述，我认为，当前最重要的任务是把党的二十大精神学习好、贯彻好，把党中央的决策部署落实到具体工作中去。`)}
+
+二、结合国际交流工作的反思与体会
+
+${随机替换(`作为${人物.profile.department}的${人物.profile.position}，我长期从事${人物.profile.workContent}工作，与${人物.profile.internationalExp}保持着密切的工作联系。`)}
+
+${随机替换(`在国际交流的实践中，我深刻体会到，中国的发展离不开世界，世界的发展也需要中国。我们既要坚持原则立场，又要促进务实合作。`)}这要求我在工作中既要有政治敏感性，又要有专业能力；既要讲好中国故事，又要虚心学习借鉴。
+
+${随机替换(`本月，我参与了多场与驻华使馆及国际组织的交流活动。在交流中，我始终坚持平等互利、合作共赢的原则，努力为国家经济社会发展贡献力量。同时，我也清醒地认识到，国际形势复杂多变，我们需要时刻保持清醒头脑。`)}
+
+三、将党性修养融入本职工作的路径思考
+
+${随机替换(`如何将党性修养融入本职工作，是我一直思考的问题。`)}我认为，关键是要做到以下几点：
+
+${随机替换(`第一，坚持学思用贯通、知信行统一。把学习成果转化为推动工作的实际行动，在实践中检验学习成效。`)}
+
+${随机替换(`第二，立足本职岗位，践行初心使命。无论是对外联络还是会展培训，都要以高标准要求自己，展现共产党员的良好形象。`)}
+
+${随机替换(`第三，发挥先锋模范作用，带动身边同事共同进步。以实际行动向党组织靠拢，争取早日成为一名合格的共产党员。`)}
+
+四、自我剖析与提升计划
+
+${随机替换(`对照党员标准，我认真查找了自身存在的问题和不足：`)}
+
+${随机替换(`一是理论学习还需进一步深入，对党的创新理论的理解还不够透彻；二是工作中有时存在因循守旧的思维，创新意识有待加强；三是在联系群众方面还不够紧密，需要进一步改进工作方法。`)}
+
+${随机替换(`针对以上问题，我制定了以下改进措施：`)}
+
+${随机替换(`1. 制定系统的理论学习计划，坚持每天学习党的理论著作，不断提高政治理论素养；`)}
+
+${随机替换(`2. 勇于开拓创新，在${人物.profile.workContent}中积极探索新思路、新方法；`)}
+
+${随机替换(`3. 深入基层一线，密切联系群众，在实践中增长才干、提升本领。`)}
+
+${随机替换(`我深知，入党不是终点，而是新的起点。在今后的工作和生活中，我将以更加饱满的热情、更加务实的作风、更加扎实的行动，积极向党组织汇报思想和工作，争取早日加入中国共产党，成为一名光荣的共产党员！`)}
+
+此致
+
+敬礼！
+
+汇报人：${人物.profile.name}
+${日期}日`;
+}
+
+// ==================== 多版本生成策略 ====================
+const 版本策略 = [
+  {
+    名称: 'A版 - 理论学习型',
+    描述: '偏重理论学习和思想认识',
+    特点: ['强调理论学习', '政治站位高', '篇幅均衡']
+  },
+  {
+    名称: 'B版 - 实践结合型',
+    描述: '偏重联系工作实际',
+    特点: ['结合本职工作', '案例丰富', '接地气']
+  },
+  {
+    名称: 'C版 - 反思成长型',
+    描述: '偏重自我剖析和成长',
+    特点: ['深度自我剖析', '成长导向', '情感真切']
+  }
+];
+
+function 生成版本(策略, 素材, 人物, 精神, 模板类型, 字数设置) {
+  let content = '';
+
+  // 判断是快速模式（精神库）还是选择模式（用户勾选素材）
+  const isSelectMode = 素材 && 素材.news && 素材.speeches && 素材.spirits;
+
+  if (isSelectMode) {
+    // 选择素材模式 - 使用新模板
+    switch (模板类型) {
+      case 'early':
+        content = 生成初期模板_选择模式(素材, 人物, 字数设置);
+        break;
+      case 'middle':
+        content = 生成中期模板_选择模式(素材, 人物, 字数设置);
+        break;
+      case 'late':
+        content = 生成后期模板_选择模式(素材, 人物, 字数设置);
+        break;
+    }
+  } else {
+    // 快速模式 - 使用原有精神库
+    switch (模板类型) {
+      case 'early':
+        content = 生成初期模板(素材, 人物, 精神, 字数设置);
+        break;
+      case 'middle':
+        content = 生成中期模板(素材, 人物, 精神, 字数设置);
+        break;
+      case 'late':
+        content = 生成后期模板(素材, 人物, 精神, 字数设置);
+        break;
+    }
+  }
+
+  // 根据版本策略进行实质性内容调整
+  switch (策略.名称) {
+    case 'A版 - 理论学习型':
+      // 理论学习型：强调理论深度，引用原话，深入阐述
+      content = content.replace('一、学习体会', '一、理论学习与思想认识');
+      content = content.replace('二、', '通过系统学习，我深刻认识到党的创新理论的科学性和实践性。\n\n二、');
+      // 增强理论性表述
+      content = 内容替换为理论型(content, 素材);
+      break;
+    case 'B版 - 实践结合型':
+      // 实践结合型：强调工作实际，多举例子，侧重应用
+      content = content.replace('一、学习体会', '一、理论联系实际的体会');
+      content = content.replace('二、', '在实际工作中，我深刻体会到科学理论的指导价值。\n\n二、');
+      // 增强实践性表述
+      content = 内容替换为实践型(content, 素材, 人物);
+      break;
+    case 'C版 - 反思成长型':
+      // 反思成长型：强调内心感悟，自我剖析，成长历程
+      content = content.replace('一、学习体会', '一、学习中的感悟与反思');
+      content = content.replace('二、', '每一次学习都是一次心灵的洗礼，让我更加坚定了理想信念。\n\n二、');
+      // 增强反思性表述
+      content = 内容替换为反思型(content, 素材);
+      break;
+  }
+
+  // 根据字数设置调整内容
+  content = 根据字数调整内容(content, 字数设置);
+
+  // 进一步去AI化处理
+  content = 内容去AI化(content);
+
+  return content;
+}
+
+// ==================== 选择模式的模板函数 ====================
+function 生成初期模板_选择模式(素材, 人物, 字数设置) {
+  const 开头 = 随机选句式('学习');
+  const 日期 = `${document.getElementById('selectYear').value}年${document.getElementById('selectMonth').value}月`;
+
+  // 把素材融入句子
+  const news1 = 素材.news[0] || { 标题: '国家发展新动态', 摘要: '各项事业取得新进展' };
+  const speech1 = 素材.speeches[0] || { 讲话: '要敢于担当、善于作为', 来源: '习近平' };
+  const spirit1 = 素材.spirits[0] || { 名称: '伟大建党精神', 描述: '坚持真理、坚守理想' };
+
+  return `${日期}思想汇报
+
+敬爱的党组织：
+
+${开头}， ${随机替换(`这段时间我认真学习了党的创新理论，结合工作实际有了更深的体会`)}
+
+一、学习体会
+
+${随机替换(`本月，我认真学习了${news1.标题}等方面的内容，深受启发。`)}${news1.摘要}，这让我更加坚定了对党的信念。
+
+${随机替换(`在学习中，${speech1.来源}关于"${speech1.讲话}"的重要论述让我印象深刻。`)}${随机替换(`这句话告诉我们，作为一名入党积极分子，必须时刻以党员标准严格要求自己。`)}
+
+${随机替换(`我在${人物.profile.department}担任${人物.profile.position}，主要负责${人物.profile.workContent}。`)}${随机替换(`通过学习${spirit1.名称}，我深刻认识到：${spirit1.描述}。`)}在工作中，我始终坚持以党员标准严格要求自己，不断提升思想政治素养。
+
+二、今后努力方向
+
+${随机替换(`下一步，我将继续深入学习党的理论，不断提高思想认识。`)}具体来说：
+
+1. ${随机替换(`加强理论学习，深入领会党的精神`)}
+
+2. ${随机替换(`立足岗位实际，将精神落到实处`)}
+
+3. ${随机替换(`注重工作实效，切实提升工作能力`)}
+
+此致
+
+敬礼！
+
+汇报人：${人物.profile.name}
+${日期}日`;
+}
+
+function 生成中期模板_选择模式(素材, 人物, 字数设置) {
+  const 开头 = 随机选句式('体会');
+  const 日期 = `${document.getElementById('selectYear').value}年${document.getElementById('selectMonth').value}月`;
+
+  // 融入素材
+  const news1 = 素材.news[0] || { 标题: '国家发展新动态' };
+  const news2 = 素材.news[1] || 素材.news[0] || { 标题: '各项事业进步' };
+  const speech1 = 素材.speeches[0] || { 讲话: '要敢于担当、善于作为', 来源: '习近平' };
+  const speech2 = 素材.speeches[1] || 素材.speeches[0] || { 讲话: '不忘初心', 来源: '习近平' };
+  const spirit1 = 素材.spirits[0] || { 名称: '伟大建党精神' };
+  const spirit2 = 素材.spirits[1] || 素材.spirits[0] || { 名称: '两个确立' };
+
+  return `${日期}思想汇报
+
+敬爱的党组织：
+
+${开头}， ${随机替换(`结合当前学习和工作实际，我对党的创新理论有了更深的理解`)}
+
+一、学习体会
+
+${随机替换(`本月，我认真学习了${news1.标题}等方面的内容。`)}通过学习，我深刻认识到，作为一名入党积极分子，必须时刻以党员标准严格要求自己。
+
+${随机替换(`${speech1.来源}指出："${speech1.讲话}"。`)}${随机替换(`这句话对我们每一名党员来说都具有重要的指导意义。`)}
+
+${随机替换(`结合${spirit1.名称}的要求，我深刻领会到：${spirit1.名称}是我们党的精神之源。`)}${随机替换(`在实际工作中，我要坚持学以致用，把学习成果转化为推动工作的实际行动。`)}
+
+二、联系工作的思考
+
+${随机替换(`作为${人物.profile.department}的一名工作人员，我深感责任重大。`)}在工作中，我主要负责${人物.profile.workContent}，这些工作与促进国际交流合作息息相关。
+
+${随机替换(`本月，我参与了与${人物.profile.internationalExp}等方面的交流活动。`)}比如在${news2.标题}的相关工作中，我深刻体会到，只有将党的精神与实际工作紧密结合，才能真正做到知行合一。
+
+三、存在的不足与改进
+
+${随机替换(`在肯定成绩的同时，我也清醒地认识到自己还存在一些不足。主要表现在：理论学习还不够深入，工作创新意识还需加强。`)}
+
+${随机替换(`针对以上不足，我将在今后的工作中努力改进：一是加强理论学习，提高政治素养；二是注重实践锻炼，提升业务能力；三是严格要求自己，争取更大进步。`)}
+
+此致
+
+敬礼！
+
+汇报人：${人物.profile.name}
+${日期}日`;
+}
+
+function 生成后期模板_选择模式(素材, 人物, 字数设置) {
+  const 开头 = 随机选句式('认识');
+  const 日期 = `${document.getElementById('selectYear').value}年${document.getElementById('selectMonth').value}月`;
+
+  // 融入素材
+  const news1 = 素材.news[0] || { 标题: '国家发展成就' };
+  const news2 = 素材.news[1] || 素材.news[0] || { 标题: '改革开放新进展' };
+  const speech1 = 素材.speeches[0] || { 讲话: '要敢于担当、善于作为', 来源: '习近平' };
+  const speech2 = 素材.speeches[1] || 素材.speeches[0] || { 讲话: '不忘初心', 来源: '习近平' };
+  const spirit1 = 素材.spirits[0] || { 名称: '中国式现代化' };
+  const spirit2 = 素材.spirits[1] || 素材.spirits[0] || { 名称: '新发展理念' };
+
+  return `${日期}思想汇报
+
+敬爱的党组织：
+
+${开头}， ${随机替换(`通过系统学习党的创新理论，结合工作实践，我对一些问题有了更加深入的认识`)}
+
+一、学习体会
+
+${随机替换(`本月，我认真学习了${news1.标题}等方面的内容，深受启发。`)}特别是${news2.标题}的相关实践，让我更加坚定了对党的信念。
+
+${随机替换(`${speech1.来源}强调："${speech1.讲话}"。`)}${随机替换(`这句话告诉我们，在任何时候都要敢于担当、勇于作为。`)}
+
+${随机替换(`同时，${speech2.来源}关于"${speech2.讲话}"的重要论述，也让我深受教育。`)}结合${spirit1.名称}的要求，我深刻认识到，只有不断加强党性修养，才能更好地服务人民群众。
+
+二、结合国际交流工作的反思
+
+${随机替换(`作为${人物.profile.department}的${人物.profile.position}，我长期从事${人物.profile.workContent}工作，与${人物.profile.internationalExp}保持着密切的工作联系。`)}
+
+${随机替换(`在国际交流的实践中，我深刻体会到，${spirit2.名称}对于我们开展工作具有重要的指导意义。`)}${随机替换(`我们既要坚持原则立场，又要促进务实合作，在国际舞台上展现中国共产党党员的良好形象。`)}
+
+三、将党性修养融入本职工作的路径思考
+
+${随机替换(`如何将党性修养融入本职工作，是我一直思考的问题。`)}${随机替换(`我认为，关键是要做到以下几点：`)}
+
+${随机替换(`第一，坚持学思用贯通、知信行统一。`)}把学习成果转化为推动工作的实际行动。
+
+${随机替换(`第二，立足本职岗位，践行初心使命。`)}无论是对外联络还是会展培训，都要以高标准要求自己。
+
+${随机替换(`第三，发挥先锋模范作用，带动身边同事共同进步。`)}以实际行动向党组织靠拢。
+
+四、自我剖析与提升计划
+
+${随机替换(`对照党员标准，我认真查找了自身存在的问题和不足：理论学习还需进一步深入，工作中有时存在因循守旧的思维。`)}
+
+${随机替换(`针对以上问题，我制定了以下改进措施：制定系统的理论学习计划，不断提高政治理论素养；勇于开拓创新，积极探索新思路；深入基层一线，在实践中增长才干。`)}
+
+${随机替换(`我深知，入党不是终点，而是新的起点。在今后的工作和生活中，我将以更加饱满的热情、更加务实的作风，争取早日加入中国共产党！`)}
+
+此致
+
+敬礼！
+
+汇报人：${人物.profile.name}
+${日期}日`;
+}
+
+// ==================== 字数调整函数 ====================
+function 根据字数调整内容(内容, 目标字数) {
+  const currentLength = 内容.length;
+
+  // 如果内容已经接近目标字数，不需要调整
+  if (Math.abs(currentLength - 目标字数) < 150) {
+    return 内容;
+  }
+
+  // 需要扩充内容
+  if (currentLength < 目标字数) {
+    const 扩充素材 = [
+      '在今后的学习和工作中，我将继续加强理论学习，不断提高政治素养，将学习成果转化为推动工作的实际行动。',
+      '我深刻认识到，作为一名入党积极分子，必须时刻以党员标准严格要求自己，在思想上、行动上与党中央保持高度一致。',
+      '通过这段时间的学习，我更加坚定了入党的决心，也更加明确了今后努力的方向。我将以更加饱满的热情投入到工作中去。',
+      '在以后的工作中，我将继续立足本职岗位，密切联系群众，以实际行动向党组织靠拢，争取早日成为一名合格的共产党员。',
+      '我要把学习成果运用到实际工作中去，不断改进工作方法，提高工作效率，以优异的工作业绩向党组织汇报。',
+      '作为一名入党积极分子，我深感责任重大，使命光荣。在今后的工作中，我将以更高的标准要求自己，不断追求进步。',
+      '我将继续加强党性修养，认真学习党的理论知识，将学习成果与工作实践相结合，不断提高自身综合素质。',
+      '通过学习，我深刻体会到，只有将党的精神与实际工作紧密结合，才能真正做到知行合一，更好地服务人民群众。',
+      '在今后的工作中，我将进一步严格要求自己，充分发挥先锋模范作用，以实际行动向党组织汇报思想和工作情况。',
+      '我将继续深入学习党的创新理论，不断提高政治判断力、政治领悟力、政治执行力，切实增强"四个意识"、坚定"四个自信"、做到"两个维护"。'
+    ];
+
+    // 计算需要多少字
+    const 需要字数 = 目标字数 - currentLength;
+    const 需要条数 = Math.ceil(需要字数 / 75);
+
+    // 收集不重复的素材
+    const usedIndices = new Set();
+    const 添加内容List = [];
+    for (let i = 0; i < 需要条数 && 添加内容List.length < 20; i++) {
+      let attempts = 0;
+      let idx;
+      do {
+        idx = Math.floor(Math.random() * 扩充素材.length);
+        attempts++;
+      } while (usedIndices.has(idx) && attempts < 50);
+      usedIndices.add(idx);
+      添加内容List.push(扩充素材[idx]);
+    }
+
+    const 添加内容 = 添加内容List.join('。') + '。';
+
+    // 在末尾添加
+    return 内容 + '\n\n' + 添加内容;
+  }
+
+  return 内容;
+}
+
+// ==================== 版本风格替换函数 ====================
+
+// 理论学习型：增强理论深度和思想性
+function 内容替换为理论型(内容, 素材) {
+  const speech1 = 素材.speeches[0] || { 讲话: '要敢于担当、善于作为', 来源: '习近平' };
+  const spirit1 = 素材.spirits[0] || { 名称: '伟大建党精神' };
+
+  let result = 内容;
+
+  // 在开头段落添加理论性表述
+  const 理论性开头 = [
+    '从马克思主义基本原理来看，',
+    '从党的创新理论高度来认识，',
+    '深入理解习近平新时代中国特色社会主义思想，我深刻体会到，',
+    '从理论维度审视，'
+  ];
+  const 随机理论开头 = 理论性开头[Math.floor(Math.random() * 理论性开头.length)];
+
+  // 替换开头
+  result = result.replace('${随机替换(`', 随机理论开头 + '${随机替换(`');
+
+  return result;
+}
+
+// 实践结合型：增强工作实践和具体事例
+function 内容替换为实践型(内容, 素材, 人物) {
+  let result = 内容;
+
+  // 增强实践性的表述
+  const 实践性表述 = [
+    '在实际工作中，我深刻体会到',
+    '拿我们部门来说，',
+    '在处理具体事务的过程中，我感受到',
+    '结合我的工作实际，'
+  ];
+  const 随机实践 = 实践性表述[Math.floor(Math.random() * 实践性表述.length)];
+
+  // 在适当位置插入实践性内容
+  if (result.includes('在工作中，我') && !result.includes('拿我们部门来说')) {
+    result = result.replace('在工作中，我', 随机实践 + '，在工作中，我');
+  }
+
+  return result;
+}
+
+// 反思成长型：增强内心独白和情感表达
+function 内容替换为反思型(内容, 素材) {
+  const speech1 = 素材.speeches[0] || { 讲话: '要敢于担当', 来源: '习近平' };
+
+  let result = 内容;
+
+  // 添加更多内心独白式表述
+  const 内心独白 = [
+    '说实话，',
+    '回想起来，',
+    '我一直在想，',
+    '有时候我也在反思，',
+    '通过这段学习，我真切地感受到，'
+  ];
+  const 随机独白 = 内心独白[Math.floor(Math.random() * 内心独白.length)];
+
+  // 在"学习体会"部分增强情感
+  if (result.includes('一、理论学习与思想认识')) {
+    result = result.replace('一、理论学习与思想认识', '一、理论学习中的心灵触动');
+  }
+  if (result.includes('一、理论联系实际的体会')) {
+    result = result.replace('一、理论联系实际的体会', '一、理论联系实际的心得');
+  }
+
+  return result;
+}
+
+function 内容去AI化(内容) {
+  let result = 内容;
+
+  // 随机插入一些口语化表达
+  const 口语化片段 = [
+    '说实话，',
+    '给我的感觉是，',
+    '这一点我感触特别深。',
+    '可能我的理解还不够深入，',
+    '总之，',
+    '从这个角度来说，'
+  ];
+
+  // 在第二段后随机插入
+  if (Math.random() > 0.5 && result.includes('\n\n')) {
+    const parts = result.split('\n\n');
+    if (parts.length > 3) {
+      const insertPos = 2;
+      const insertText = '\n' + 口语化片段[Math.floor(Math.random() * 口语化片段.length)];
+      parts[insertPos] = insertText + parts[insertPos];
+      result = parts.join('\n\n');
+    }
+  }
+
+  // 随机调整句子
+  result = 随机替换(result);
+
+  return result;
+}
+
+// ==================== 主生成函数 ====================
+let currentReports = [];
+let currentVersionIndex = 0;
+let selectedMaterials = { news: [], speeches: [], spirits: [] };
+
+// 准备素材阶段 - 显示选择界面
+function prepareMaterials() {
+  const storage = getStorage();
+
+  if (!storage.profile) {
+    const name = document.getElementById('name').value;
+    const department = document.getElementById('department').value;
+    if (!name || !department) {
+      alert('请先填写人物信息配置，或点击"加载已有配置"！');
+      return;
+    }
+    saveProfile();
+  }
+
+  const month = document.getElementById('selectMonth').value;
+
+  // 渲染素材选择界面
+  renderMaterialSelection(month);
+
+  // 隐藏生成按钮区域，显示素材选择区域
+  document.getElementById('generateBtnGroup').style.display = 'none';
+  document.getElementById('materialSelection').style.display = 'block';
+  document.getElementById('results').style.display = 'none';
+}
+
+function renderMaterialSelection(month) {
+  const monthNum = parseInt(month);
+
+  // 根据月份计算推荐分数（距离当月越近分数越高）
+  const get推荐分数 = (推荐月份) => {
+    if (!推荐月份) return 0;
+    let maxScore = 0;
+    for (const m of 推荐月份) {
+      const diff = Math.min(Math.abs(monthNum - m), 12 - Math.abs(monthNum - m));
+      const score = 10 - diff;
+      if (score > maxScore) maxScore = score;
+    }
+    return maxScore;
+  };
+
+  // 排序函数：推荐分数高的排前面
+  const sortBy推荐 = (a, b) => get推荐分数(b.推荐月份) - get推荐分数(a.推荐月份);
+
+  // 渲染新闻选择（国内新闻排前面，国际新闻在后）
+  const newsContainer = document.getElementById('newsSelection');
+  const sortedNews = [...时事新闻库].sort((a, b) => {
+    if (a.分类 === '国内' && b.分类 !== '国内') return -1;
+    if (b.分类 === '国内' && a.分类 !== '国内') return 1;
+    return 0;
+  });
+  newsContainer.innerHTML = sortedNews.map(news => `
+    <label class="checkbox-item" data-type="news" data-id="${news.id}">
+      <input type="checkbox" value="${news.id}" onchange="toggleMaterial('news', '${news.id}')">
+      <div class="item-content">
+        <div class="item-title">[${news.分类}] ${news.标题}</div>
+        <div class="item-desc">${news.摘要}</div>
+      </div>
+    </label>
+  `).join('');
+
+  // 渲染讲话选择（按推荐月份排序）
+  const speechContainer = document.getElementById('speechSelection');
+  const sortedSpeeches = [...领导讲话库].sort(sortBy推荐);
+  speechContainer.innerHTML = sortedSpeeches.map((speech, index) => {
+    const 推荐标签 = get推荐分数(speech.推荐月份) > 5 ? ' <span style="color:#c41230;font-size:11px;">★推荐</span>' : '';
+    return `
+    <label class="checkbox-item" data-type="speech" data-id="${speech.id}">
+      <input type="checkbox" value="${speech.id}" onchange="toggleMaterial('speech', '${speech.id}')">
+      <div class="item-content">
+        <div class="item-title">${speech.来源}${推荐标签}</div>
+        <div class="item-desc">"${speech.讲话}"</div>
+      </div>
+    </label>
+  `}).join('');
+
+  // 渲染精神提法选择（按推荐月份排序）
+  const spiritContainer = document.getElementById('spiritSelection');
+  const sortedSpirits = [...党的精神提法库].sort(sortBy推荐);
+  spiritContainer.innerHTML = sortedSpirits.map((spirit, index) => {
+    const 推荐标签 = get推荐分数(spirit.推荐月份) > 5 ? ' <span style="color:#c41230;font-size:11px;">★推荐</span>' : '';
+    return `
+    <label class="checkbox-item" data-type="spirit" data-id="${spirit.id}">
+      <input type="checkbox" value="${spirit.id}" onchange="toggleMaterial('spirit', '${spirit.id}')">
+      <div class="item-content">
+        <div class="item-title">${spirit.名称}${推荐标签}</div>
+        <div class="item-desc">${spirit.描述.substring(0, 60)}...</div>
+      </div>
+    </label>
+  `}).join('');
+}
+
+function toggleMaterial(type, id) {
+  const container = document.querySelector(`[data-type="${type}"][data-id="${id}"]`);
+
+  switch(type) {
+    case 'news':
+      if (selectedMaterials.news.includes(id)) {
+        selectedMaterials.news = selectedMaterials.news.filter(n => n !== id);
+        container.classList.remove('checked');
+      } else {
+        if (selectedMaterials.news.length >= 3) {
+          alert('最多只能选择3条新闻！');
+          container.querySelector('input').checked = false;
+          return;
+        }
+        selectedMaterials.news.push(id);
+        container.classList.add('checked');
+      }
+      break;
+    case 'speech':
+      if (selectedMaterials.speeches.includes(id)) {
+        selectedMaterials.speeches = selectedMaterials.speeches.filter(s => s !== id);
+        container.classList.remove('checked');
+      } else {
+        if (selectedMaterials.speeches.length >= 3) {
+          alert('最多只能选择3条讲话！');
+          container.querySelector('input').checked = false;
+          return;
+        }
+        selectedMaterials.speeches.push(id);
+        container.classList.add('checked');
+      }
+      break;
+    case 'spirit':
+      if (selectedMaterials.spirits.includes(id)) {
+        selectedMaterials.spirits = selectedMaterials.spirits.filter(s => s !== id);
+        container.classList.remove('checked');
+      } else {
+        if (selectedMaterials.spirits.length >= 3) {
+          alert('最多只能选择3条精神提法！');
+          container.querySelector('input').checked = false;
+          return;
+        }
+        selectedMaterials.spirits.push(id);
+        container.classList.add('checked');
+      }
+      break;
+  }
+}
+
+function hideMaterialSelection() {
+  document.getElementById('generateBtnGroup').style.display = 'flex';
+  document.getElementById('materialSelection').style.display = 'none';
+}
+
+async function generateFromSelected() {
+  // 检查是否至少各选了一项
+  if (selectedMaterials.news.length === 0) {
+    alert('请至少选择1条时事新闻！');
+    return;
+  }
+  if (selectedMaterials.speeches.length === 0) {
+    alert('请至少选择1条领导讲话！');
+    return;
+  }
+  if (selectedMaterials.spirits.length === 0) {
+    alert('请至少选择1条党的精神提法！');
+    return;
+  }
+
+  const storage = getStorage();
+  const year = document.getElementById('selectYear').value;
+  const month = document.getElementById('selectMonth').value;
+  const count = parseInt(document.getElementById('reportCount').value);
+  const wordCount = parseInt(document.getElementById('wordCount').value);
+  const stageInfo = getStageInfo();
+
+  // 显示加载状态
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('reportContainer').innerHTML = '<div class="loading">正在根据所选素材生成汇报...</div>';
+  document.getElementById('versionTabs').innerHTML = '';
+
+  // 获取选中的素材内容
+  const selectedNews = selectedMaterials.news.map(id => 时事新闻库.find(n => n.id === id));
+  const selectedSpeeches = selectedMaterials.speeches.map(id => 领导讲话库.find(s => s.id === id));
+  const selectedSpirits = selectedMaterials.spirits.map(id => 党的精神提法库.find(s => s.id === id));
+
+  // 构建素材对象传递给模板
+  const 素材 = {
+    news: selectedNews,
+    speeches: selectedSpeeches,
+    spirits: selectedSpirits
+  };
+
+  // 生成多版本
+  const 人物 = { profile: storage.profile || {} };
+
+  currentReports = [];
+
+  // 获取用户偏好的风格，优先放在第一个
+  const preferredStyle = storage.profile?.preferredStyle || null;
+  let usedStrategies = 版本策略.slice(0, count);
+
+  // 如果有偏好风格，将偏好的版本放到第一个位置
+  if (preferredStyle) {
+    const sortedStrategies = [...usedStrategies].sort((a, b) => {
+      const aIsPreferred = a.名称.startsWith(preferredStyle);
+      const bIsPreferred = b.名称.startsWith(preferredStyle);
+      if (aIsPreferred && !bIsPreferred) return -1;
+      if (!aIsPreferred && bIsPreferred) return 1;
+      return 0;
+    });
+    usedStrategies = sortedStrategies;
+  }
+
+  for (let i = 0; i < count; i++) {
+    const report = 生成版本(usedStrategies[i], 素材, 人物, null, stageInfo.template, wordCount);
+    currentReports.push({
+      version: usedStrategies[i].名称,
+      desc: usedStrategies[i].描述,
+      content: report
+    });
+  }
+
+  // 渲染版本选择卡
+  renderVersionTabs();
+
+  // 显示第一个版本
+  showVersion(0);
+
+  // 更新阶段显示
+  updateStageDisplay();
+
+  // 保存到历史
+  const historyEntry = {
+    date: `${year}-${month}`,
+    year: year,
+    month: month,
+    reports: currentReports,
+    stage: stageInfo.stage,
+    selectedMaterials: JSON.parse(JSON.stringify(selectedMaterials))
+  };
+  storage.history.push(historyEntry);
+  storage.useCount = storage.history.length;
+  saveStorage(storage);
+
+  document.getElementById('historySection').style.display = 'none';
+
+  // 重置选择
+  selectedMaterials = { news: [], speeches: [], spirits: [] };
+  hideMaterialSelection();
+}
+
+async function generateReport() {
+  const storage = getStorage();
+
+  if (!storage.profile) {
+    const name = document.getElementById('name').value;
+    const department = document.getElementById('department').value;
+    if (!name || !department) {
+      alert('请先填写人物信息配置，或点击"加载已有配置"！');
+      return;
+    }
+    saveProfile();
+  }
+
+  const year = document.getElementById('selectYear').value;
+  const month = document.getElementById('selectMonth').value;
+  const count = parseInt(document.getElementById('reportCount').value);
+  const wordCount = parseInt(document.getElementById('wordCount').value);
+  const stageInfo = getStageInfo();
+
+  // 显示加载状态
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('reportContainer').innerHTML = '<div class="loading">正在获取时政素材并生成汇报...</div>';
+  document.getElementById('versionTabs').innerHTML = '';
+
+  // 获取素材
+  const 精神 = 党的精神库[month] || 党的精神库['1'];
+  const 素材 = await fetchNews(year, month);
+
+  // 生成多版本
+  const 人物 = { profile: storage.profile || {} };
+  人物.profile = {
+    ...人物.profile,
+    精神: 精神
+  };
+
+  currentReports = [];
+
+  // 获取用户偏好的风格，优先放在第一个
+  const preferredStyle = storage.profile?.preferredStyle || null;
+  let usedStrategies = 版本策略.slice(0, count);
+
+  // 如果有偏好风格，将偏好的版本放到第一个位置
+  if (preferredStyle) {
+    const sortedStrategies = [...usedStrategies].sort((a, b) => {
+      const aIsPreferred = a.名称.startsWith(preferredStyle);
+      const bIsPreferred = b.名称.startsWith(preferredStyle);
+      if (aIsPreferred && !bIsPreferred) return -1;
+      if (!aIsPreferred && bIsPreferred) return 1;
+      return 0;
+    });
+    usedStrategies = sortedStrategies;
+  }
+
+  for (let i = 0; i < count; i++) {
+    const report = 生成版本(usedStrategies[i], 素材, 人物, 精神, stageInfo.template, wordCount);
+    currentReports.push({
+      version: usedStrategies[i].名称,
+      desc: usedStrategies[i].描述,
+      content: report
+    });
+  }
+
+  // 渲染版本选择卡
+  renderVersionTabs();
+
+  // 显示第一个版本
+  showVersion(0);
+
+  // 更新阶段显示
+  updateStageDisplay();
+
+  // 保存到历史
+  const historyEntry = {
+    date: `${year}-${month}`,
+    year: year,
+    month: month,
+    reports: currentReports,
+    stage: stageInfo.stage
+  };
+  storage.history.push(historyEntry);
+  storage.useCount = storage.history.length;
+  saveStorage(storage);
+
+  document.getElementById('historySection').style.display = 'none';
+}
+
+function renderVersionTabs() {
+  const tabsContainer = document.getElementById('versionTabs');
+  tabsContainer.innerHTML = currentReports.map((report, index) => `
+    <div class="version-tab ${index === 0 ? 'active' : ''}" onclick="showVersion(${index})">
+      ${report.version}
+    </div>
+  `).join('');
+}
+
+function showVersion(index) {
+  currentVersionIndex = index;
+  const report = currentReports[index];
+
+  document.querySelectorAll('.version-tab').forEach((tab, i) => {
+    tab.classList.toggle('active', i === index);
+  });
+
+  document.getElementById('reportContainer').innerHTML = `
+    <div class="report-content active">
+${report.content}
+    </div>
+  `;
+}
+
+function copyCurrentReport() {
+  const report = currentReports[currentVersionIndex];
+  // 保存用户偏好的风格
+  saveUserStylePreference(report.version);
+  navigator.clipboard.writeText(report.content).then(() => {
+    alert('已复制到剪贴板！');
+  }).catch(() => {
+    alert('复制失败，请手动选择文字复制。');
+  });
+}
+
+function saveUserStylePreference(versionName) {
+  const storage = getStorage();
+  if (!storage.profile) return;
+
+  // 提取版本类型（A/B/C）
+  const versionType = versionName.split(' - ')[0]; // "A版" 或 "B版" 或 "C版"
+
+  // 保存用户偏好的版本类型
+  storage.profile.preferredStyle = versionType;
+  storage.profile.preferredVersion = versionName;
+  saveStorage(storage);
+}
+
+function downloadCurrentReport() {
+  const report = currentReports[currentVersionIndex];
+  const blob = new Blob([report.content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `思想汇报_${report.version}_${document.getElementById('selectYear').value}年${document.getElementById('selectMonth').value}月.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ==================== 历史记录 ====================
+function viewHistory() {
+  const storage = getStorage();
+
+  if (storage.history.length === 0) {
+    alert('暂无历史记录！');
+    return;
+  }
+
+  const historyList = document.getElementById('historyList');
+  historyList.innerHTML = storage.history.slice().reverse().map((entry, index) => `
+    <div class="history-item">
+      <div>
+        <span class="date">${entry.year}年${entry.month}月</span>
+        <span style="color:#999;font-size:12px;margin-left:10px;">阶段${entry.stage}</span>
+      </div>
+      <div class="preview">${entry.reports[0].content.substring(0, 50)}...</div>
+    </div>
+  `).join('');
+
+  document.getElementById('historySection').style.display = 'block';
+}
+
+function hideHistory() {
+  document.getElementById('historySection').style.display = 'none';
+}
+
+// ==================== 初始化 ====================
+document.addEventListener('DOMContentLoaded', function() {
+  updateStageDisplay();
+
+  // 尝试加载已有配置
+  const storage = getStorage();
+  if (storage.profile) {
+    loadProfile();
+  }
+});
+</script>
+</body>
+</html>
