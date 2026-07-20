@@ -635,7 +635,6 @@ function saveProfile() {
     name: document.getElementById('name').value || '同志',
     department: document.getElementById('department').value || '中国投资促进会',
     workContent: document.getElementById('workContent').value || '各项工作',
-    age: document.getElementById('age').value || '',
     internationalExp: document.getElementById('internationalExp').value || '与英国、智利大使馆交流',
     startYear: document.getElementById('startYear').value || '2025',
     startMonth: document.getElementById('startMonth').value || '1',
@@ -654,7 +653,6 @@ function loadProfile() {
   if (storage.profile) {
     document.getElementById('name').value = storage.profile.name || '';
     document.getElementById('department').value = storage.profile.department || '';
-    document.getElementById('age').value = storage.profile.age || '';
     document.getElementById('workContent').value = storage.profile.workContent || '';
     document.getElementById('internationalExp').value = storage.profile.internationalExp || '';
     if (storage.profile.startYear) document.getElementById('startYear').value = storage.profile.startYear;
