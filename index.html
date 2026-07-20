@@ -398,7 +398,7 @@
 
     <footer>
       <p>本工具仅供学习参考，思想汇报内容请结合实际情况修改使用</p>
-      <p style="margin-top:4px;font-size:11px;color:#bbb;">v2.1.0 · build 20260720-15</p>
+      <p style="margin-top:4px;font-size:11px;color:#bbb;">v2.1.0 · build 20260720-16</p>
     </footer>
   </div>
 
@@ -1400,7 +1400,7 @@ async function enrichMaterialsWithAI() {
 
     // 存入 enrichedLibrary
     const storage = getStorage();
-    if (!storage.enrichedLibrary) storage.enrichedLibrary = { news: [], speech: [], spirit: [] };
+    if (!storage.enrichedLibrary) storage.enrichedLibrary = { news: [], speeches: [], spirits: [] };
     mergeLibraryItems(storage.enrichedLibrary.news, newNews);
     mergeLibraryItems(storage.enrichedLibrary.speeches, newSpeeches);
     mergeLibraryItems(storage.enrichedLibrary.spirits, newSpirits);
