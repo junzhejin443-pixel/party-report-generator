@@ -364,7 +364,7 @@
 
     <footer>
       <p>本工具仅供学习参考，思想汇报内容请结合实际情况修改使用</p>
-      <p style="margin-top:4px;font-size:11px;color:#bbb;">v2.1.0 · build 20260720-6</p>
+      <p style="margin-top:4px;font-size:11px;color:#bbb;">v2.1.0 · build 20260720-7</p>
     </footer>
   </div>
 
@@ -1293,13 +1293,13 @@ function renderMaterialSelection(month) {
   newsContainer.innerHTML = sortedNews.map(news => {
     const isAI = news.id && news.id.startsWith('ai_');
     return `
-    <label class="checkbox-item" data-type="news" data-id="${news.id}">
-      <input type="checkbox" value="${news.id}">
+    <div class="checkbox-item" data-type="news" data-id="${news.id}">
+      <span class="check-mark">✓</span>
       <div class="item-content">
         <div class="item-title">[${news.分类 || '综合'}] ${news.标题}${isAI ? ' 🤖' : ''}</div>
         <div class="item-desc">${news.摘要}</div>
       </div>
-    </label>`;
+    </div>`;
   }).join('');
   // 事件委托：监听新闻勾选
   newsContainer.onclick = function(e) {
@@ -1312,12 +1312,10 @@ function renderMaterialSelection(month) {
     const list = selectedMaterials[type];
     if (item.classList.contains('checked')) {
       item.classList.remove('checked');
-      item.querySelector('input').checked = false;
       selectedMaterials[type] = list.filter(i => i !== id);
     } else {
       if (list.length >= maxSelect) { alert(`最多只能选择${maxSelect}条！`); return; }
       item.classList.add('checked');
-      item.querySelector('input').checked = true;
       if (!list.includes(id)) list.push(id);
     }
   };
@@ -1329,13 +1327,13 @@ function renderMaterialSelection(month) {
     const isAI = speech.id && speech.id.startsWith('ai_');
     const badge = score > 5 ? ' <span style="color:#c41230;font-size:11px;">★推荐</span>' : '';
     return `
-    <label class="checkbox-item" data-type="speech" data-id="${speech.id}">
-      <input type="checkbox" value="${speech.id}">
+    <div class="checkbox-item" data-type="speech" data-id="${speech.id}">
+      <span class="check-mark">✓</span>
       <div class="item-content">
         <div class="item-title">${speech.来源}${badge}${isAI ? ' 🤖' : ''}</div>
         <div class="item-desc">"${speech.讲话}"</div>
       </div>
-    </label>`;
+    </div>`;
   }).join('');
   // 事件委托：监听讲话勾选
   speechContainer.onclick = function(e) {
@@ -1348,12 +1346,10 @@ function renderMaterialSelection(month) {
     const list = selectedMaterials[type];
     if (item.classList.contains('checked')) {
       item.classList.remove('checked');
-      item.querySelector('input').checked = false;
       selectedMaterials[type] = list.filter(i => i !== id);
     } else {
       if (list.length >= maxSelect) { alert(`最多只能选择${maxSelect}条！`); return; }
       item.classList.add('checked');
-      item.querySelector('input').checked = true;
       if (!list.includes(id)) list.push(id);
     }
   };
@@ -1365,13 +1361,13 @@ function renderMaterialSelection(month) {
     const isAI = spirit.id && spirit.id.startsWith('ai_');
     const badge = score > 5 ? ' <span style="color:#c41230;font-size:11px;">★推荐</span>' : '';
     return `
-    <label class="checkbox-item" data-type="spirit" data-id="${spirit.id}">
-      <input type="checkbox" value="${spirit.id}">
+    <div class="checkbox-item" data-type="spirit" data-id="${spirit.id}">
+      <span class="check-mark">✓</span>
       <div class="item-content">
         <div class="item-title">${spirit.名称}${badge}${isAI ? ' 🤖' : ''}</div>
         <div class="item-desc">${(spirit.描述 || '').substring(0, 60)}...</div>
       </div>
-    </label>`;
+    </div>`;
   }).join('');
   // 事件委托：监听精神提法勾选
   spiritContainer.onclick = function(e) {
@@ -1384,12 +1380,10 @@ function renderMaterialSelection(month) {
     const list = selectedMaterials[type];
     if (item.classList.contains('checked')) {
       item.classList.remove('checked');
-      item.querySelector('input').checked = false;
       selectedMaterials[type] = list.filter(i => i !== id);
     } else {
       if (list.length >= maxSelect) { alert(`最多只能选择${maxSelect}条！`); return; }
       item.classList.add('checked');
-      item.querySelector('input').checked = true;
       if (!list.includes(id)) list.push(id);
     }
   };
