@@ -294,6 +294,40 @@
             <div id="spiritSelection" class="checkbox-grid"></div>
           </div>
 
+          <!-- 原料池 -->
+          <div style="margin-top:15px;">
+            <h3 style="color:#c41230;font-size:15px;margin-bottom:5px;cursor:pointer;" onclick="document.getElementById('materialPool').style.display=document.getElementById('materialPool').style.display==='none'?'block':'none'">
+              🧪 原料池（AI扩展句式变体，增加不重复度）<span style="font-size:12px;color:#999;"> 点击展开</span>
+            </h3>
+            <div id="materialPool" style="display:none;background:#fff;border:1px solid #e8e8e8;border-radius:4px;padding:15px;">
+              <div class="tips tips-info"><strong>用法：</strong>写2-3句核心意思 → AI扩展为10个不同表述 → 加入句式库 → 每次生成随机取用，大幅降低重复。</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>开头句式（理论学习/实践/反思开头）</label>
+                  <textarea id="poolSeeds_open" rows="3" placeholder="如：&#10;通过系统学习党的创新理论，我深刻认识到理论指导实践的极端重要性。&#10;这段时间我认真学习领会党的二十大精神，在思想认识上有了明显提升。"></textarea>
+                  <select id="poolVersion_open" style="margin-top:5px;font-size:12px;">
+                    <option value="A">A版 理论学习型</option><option value="B">B版 实践结合型</option><option value="C">C版 反思成长型</option>
+                  </select>
+                  <button class="btn btn-outline btn-small" onclick="expandPool('开头', 'poolSeeds_open', 'poolVersion_open')" style="margin-top:5px;">🤖 扩展</button>
+                  <span id="poolResult_open" style="font-size:12px;color:#666;margin-left:8px;"></span>
+                </div>
+                <div class="form-group">
+                  <label>学习体会（时政/讲话/精神引用）</label>
+                  <textarea id="poolSeeds_study" rows="3" placeholder="如：&#10;本月我认真学习了关于高质量发展的相关论述，深刻体会到发展是党执政兴国的第一要务。&#10;习近平总书记的重要讲话让我深受教育，更加坚定了为人民服务的决心。"></textarea>
+                  <select id="poolStage_study" style="margin-top:5px;font-size:12px;">
+                    <option value="初期">初期</option><option value="中期" selected>中期</option><option value="后期">后期</option>
+                  </select>
+                  <button class="btn btn-outline btn-small" onclick="expandPool('学习体会', 'poolSeeds_study', 'poolStage_study', true)" style="margin-top:5px;">🤖 扩展</button>
+                  <span id="poolResult_study" style="font-size:12px;color:#666;margin-left:8px;"></span>
+                </div>
+              </div>
+              <div style="margin-top:5px;font-size:12px;color:#999;">
+                📊 当前扩展池：<span id="poolStats">加载中...</span>
+                <button class="btn btn-outline btn-small" onclick="clearPool()" style="margin-left:10px;">清空扩展池</button>
+              </div>
+            </div>
+          </div>
+
           <div class="btn-group" style="margin-top:20px;">
             <button class="btn btn-primary" onclick="generateReports()">✅ 生成思想汇报</button>
             <button class="btn btn-outline" onclick="enrichMaterialsWithAI()" id="btnAIEnrich">🤖 AI更新素材库</button>
@@ -364,7 +398,7 @@
 
     <footer>
       <p>本工具仅供学习参考，思想汇报内容请结合实际情况修改使用</p>
-      <p style="margin-top:4px;font-size:11px;color:#bbb;">v2.1.0 · build 20260720-13</p>
+      <p style="margin-top:4px;font-size:11px;color:#bbb;">v2.1.0 · build 20260720-14</p>
     </footer>
   </div>
 
@@ -610,24 +644,116 @@ const 句式库 = {
     ]
   }};
 
-// 选句函数：从数据库中随机选取并替换模板变量
-function 选句(分类, 阶段, 版本, 替换映射) {
-  const cat = 句式库[分类];
-  if (!cat) return '';
+// ==================== 原料池管理 ====================
+const POOL_KEY = 'sentence_pool_v2';
 
-  // 尝试获取：分类[阶段][版本] > 分类[版本] > 分类（数组）
-  let 变体列表 = null;
-  if (typeof cat === 'object' && !Array.isArray(cat)) {
-    if (阶段 && cat[阶段]) {
-      变体列表 = (版本 && cat[阶段][版本]) ? cat[阶段][版本] : (Array.isArray(cat[阶段]) ? cat[阶段] : null);
-    }
-    if (!变体列表 && 版本 && cat[版本]) {
-      变体列表 = cat[版本];
-    }
-    if (!变体列表 && 阶段 && cat[阶段] && Array.isArray(cat[阶段])) {
-      变体列表 = cat[阶段];
+function getPool() {
+  try { return JSON.parse(localStorage.getItem(POOL_KEY)) || {}; }
+  catch (e) { return {}; }
+}
+
+function savePool(pool) {
+  try { localStorage.setItem(POOL_KEY, JSON.stringify(pool)); }
+  catch (e) { alert('存储空间不足，请清理扩展池。'); }
+}
+
+function updatePoolStats() {
+  const el = document.getElementById('poolStats');
+  if (!el) return;
+  const pool = getPool();
+  let total = 0;
+  for (const cat of Object.values(pool)) {
+    for (const arr of Object.values(cat)) {
+      if (Array.isArray(arr)) total += arr.length;
+      else for (const sub of Object.values(arr)) {
+        if (Array.isArray(sub)) total += sub.length;
+      }
     }
   }
+  el.textContent = total + ' 条扩展句式';
+}
+
+async function expandPool(category, seedId, paramId, isStage) {
+  const seeds = document.getElementById(seedId).value.trim();
+  if (!seeds) { alert('请先输入2-3句种子句式！'); return; }
+  const apiKey = getApiKey();
+  if (!apiKey) { alert('请先在AI设置中配置API密钥！'); return; }
+
+  const param = document.getElementById(paramId).value;
+  const resultEl = document.getElementById('poolResult_' + (isStage ? 'study' : 'open'));
+  if (resultEl) resultEl.textContent = '⏳ AI扩展中...';
+
+  try {
+    const prompt = `你是一个帮助撰写党员思想汇报的助手。请基于以下种子句式，生成10个语义相同但表述完全不同的变体。要求：保持正式庄重风格，适合写入党员思想汇报。每个变体单独一行，不要编号，不要任何标记，不要有空行。直接输出10行变体。\n\n种子句式：\n${seeds}`;
+    const result = await callLLM('你是党员思想汇报写作助手。只输出变体句式，每行一个。', prompt, 1500);
+    if (!result) throw new Error('AI返回为空');
+
+    const variants = result.split('\n').map(s => s.trim()).filter(s => s.length > 10);
+    if (variants.length === 0) throw new Error('AI未生成有效变体');
+
+    // 写入扩展池
+    const pool = getPool();
+    if (!pool[category]) pool[category] = {};
+    const poolKey = isStage ? param : param;
+    if (!pool[category][poolKey]) pool[category][poolKey] = [];
+    let added = 0;
+    for (const v of variants) {
+      if (!pool[category][poolKey].includes(v)) {
+        pool[category][poolKey].push(v);
+        added++;
+      }
+    }
+    savePool(pool);
+    updatePoolStats();
+    if (resultEl) resultEl.textContent = `✅ 已添加 ${added} 条变体到「${category}」`;
+  } catch (e) {
+    console.error('扩展失败:', e);
+    if (resultEl) resultEl.textContent = '❌ 扩展失败：' + (e.message || '未知错误');
+  }
+}
+
+function clearPool() {
+  if (!confirm('确定清空所有扩展句式吗？')) return;
+  localStorage.removeItem(POOL_KEY);
+  updatePoolStats();
+}
+
+// 获取合并后的句式列表（静态库 + 扩展池）
+function getMergedVariants(分类, 阶段, 版本) {
+  const staticCat = 句式库[分类];
+  const pool = getPool();
+  const poolCat = pool[分类] || {};
+
+  let staticList = null;
+  if (staticCat) {
+    if (typeof staticCat === 'object' && !Array.isArray(staticCat)) {
+      if (阶段 && staticCat[阶段]) {
+        staticList = (版本 && staticCat[阶段][版本]) ? staticCat[阶段][版本] : (Array.isArray(staticCat[阶段]) ? staticCat[阶段] : null);
+      }
+      if (!staticList && 版本 && staticCat[版本]) staticList = staticCat[版本];
+      if (!staticList && 阶段 && Array.isArray(staticCat[阶段])) staticList = staticCat[阶段];
+    }
+    if (Array.isArray(staticCat)) staticList = staticCat;
+  }
+
+  // 扩展池中查找：优先按 阶段/版本 查找
+  let poolList = null;
+  const poolKey = 阶段 || 版本 || '';
+  if (poolCat[poolKey]) poolList = poolCat[poolKey];
+  if (!poolList && 版本 && poolCat[版本]) poolList = poolCat[版本];
+  if (!poolList && 阶段 && poolCat[阶段]) poolList = poolCat[阶段];
+
+  // 合并
+  const merged = [];
+  if (staticList && Array.isArray(staticList)) merged.push(...staticList);
+  if (poolList && Array.isArray(poolList)) merged.push(...poolList);
+  return merged;
+}
+
+// 选句函数：从数据库中随机选取并替换模板变量
+function 选句(分类, 阶段, 版本, 替换映射) {
+  // 优先从合并池（静态库 + 扩展池）中取
+  const 变体列表 = getMergedVariants(分类, 阶段, 版本);
   if (!变体列表 || 变体列表.length === 0) return '';
 
   const selected = 变体列表[Math.floor(Math.random() * 变体列表.length)];
@@ -640,9 +766,9 @@ function 选句(分类, 阶段, 版本, 替换映射) {
 }
 
 function 选句简单(分类) {
-  const cat = 句式库[分类];
-  if (!cat || !Array.isArray(cat) || cat.length === 0) return '';
-  return cat[Math.floor(Math.random() * cat.length)];
+  const 变体列表 = getMergedVariants(分类, null, null);
+  if (!变体列表 || 变体列表.length === 0) return '';
+  return 变体列表[Math.floor(Math.random() * 变体列表.length)];
 }
 
 // ==================== SECTION 3: 段落生成函数 ====================
@@ -1729,6 +1855,9 @@ document.addEventListener('DOMContentLoaded', function() {
   if (storage.profile) {
     loadProfileSilent(storage.profile);
   }
+
+  // 更新原料池统计
+  updatePoolStats();
 
   // 加载AI设置状态
   const hasApiKey = !!getApiKey();
