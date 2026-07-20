@@ -364,7 +364,7 @@
 
     <footer>
       <p>本工具仅供学习参考，思想汇报内容请结合实际情况修改使用</p>
-      <p style="margin-top:4px;font-size:11px;color:#bbb;">v2.1.0 · build 20260720-10</p>
+      <p style="margin-top:4px;font-size:11px;color:#bbb;">v2.1.0 · build 20260720-11</p>
     </footer>
   </div>
 
@@ -638,7 +638,7 @@ function 生成段落_时政引用(news素材, 阶段) {
       newsSummary: news.摘要
     }));
   }
-  return parts.join('\n\n');
+  return parts.join('\n');
 }
 
 function 生成段落_讲话引用(speeches素材, 阶段) {
@@ -650,7 +650,7 @@ function 生成段落_讲话引用(speeches素材, 阶段) {
       speechContent: speech.讲话
     }));
   }
-  return parts.join('\n\n');
+  return parts.join('\n');
 }
 
 function 生成段落_精神引用(spirits素材, 阶段) {
@@ -662,7 +662,7 @@ function 生成段落_精神引用(spirits素材, 阶段) {
       spiritDesc: spirit.描述
     }));
   }
-  return parts.join('\n\n');
+  return parts.join('\n');
 }
 
 function 生成段落_工作结合(人物, 工作详情, 阶段) {
@@ -693,20 +693,19 @@ function 生成初期模板(素材, 人物, 阶段, 版本, 工作详情) {
   const year = document.getElementById('selectYear').value;
   const month = document.getElementById('selectMonth').value;
   const 开头 = 选句('开头', null, 版本, {});
+  const sp = '　　'; // 全角空格，用于签名右对齐
 
-  let body = `思想汇报\n\n敬爱的党组织：\n\n${开头}\n\n`;
-
-  // 阶段1：2段式结构
-  body += `一、学习体会\n\n`;
-  body += 生成段落_时政引用(素材.news, 阶段) + '\n\n';
-  body += 生成段落_讲话引用(素材.speeches, 阶段) + '\n\n';
-  body += 生成段落_精神引用(素材.spirits, 阶段);
-
-  body += `\n\n二、努力方向\n\n`;
+  // 标题 → 空行 → 称谓 → 空行 → 正文
+  let body = `思想汇报\n\n敬爱的党组织：\n\n${开头}\n`;
+  body += `一、学习体会\n`;
+  body += 生成段落_时政引用(素材.news, 阶段) + '\n';
+  body += 生成段落_讲话引用(素材.speeches, 阶段) + '\n';
+  body += 生成段落_精神引用(素材.spirits, 阶段) + '\n';
+  body += `二、努力方向\n`;
   body += 生成段落_努力方向(阶段);
-
+  // 正文结束 → 空行 → 结尾 → 空行 → 签名
   body += `\n\n${生成段落_结尾(阶段)}\n\n`;
-  body += `汇报人：${人物.profile.name}\n${year}年${month}月15日`;
+  body += `${sp}汇报人：${人物.profile.name}\n${sp}${year}年${month}月15日`;
 
   return body;
 }
@@ -715,24 +714,20 @@ function 生成中期模板(素材, 人物, 阶段, 版本, 工作详情) {
   const year = document.getElementById('selectYear').value;
   const month = document.getElementById('selectMonth').value;
   const 开头 = 选句('开头', null, 版本, {});
+  const sp = '　　';
 
-  let body = `思想汇报\n\n敬爱的党组织：\n\n${开头}\n\n`;
-
-  // 阶段2：3段式结构
-  body += `一、理论学习与认识\n\n`;
-  body += 生成段落_时政引用(素材.news, 阶段) + '\n\n';
-  body += 生成段落_讲话引用(素材.speeches, 阶段) + '\n\n';
-  body += 生成段落_精神引用(素材.spirits, 阶段);
-
-  body += `\n\n二、联系工作的思考\n\n`;
-  body += 生成段落_工作结合(人物, 工作详情, 阶段);
-
-  body += `\n\n三、存在的不足与改进\n\n`;
-  body += 生成段落_自我剖析(人物, 阶段) + '\n\n';
+  let body = `思想汇报\n\n敬爱的党组织：\n\n${开头}\n`;
+  body += `一、理论学习与认识\n`;
+  body += 生成段落_时政引用(素材.news, 阶段) + '\n';
+  body += 生成段落_讲话引用(素材.speeches, 阶段) + '\n';
+  body += 生成段落_精神引用(素材.spirits, 阶段) + '\n';
+  body += `二、联系工作的思考\n`;
+  body += 生成段落_工作结合(人物, 工作详情, 阶段) + '\n';
+  body += `三、存在的不足与改进\n`;
+  body += 生成段落_自我剖析(人物, 阶段) + '\n';
   body += 生成段落_努力方向(阶段);
-
   body += `\n\n${生成段落_结尾(阶段)}\n\n`;
-  body += `汇报人：${人物.profile.name}\n${year}年${month}月15日`;
+  body += `${sp}汇报人：${人物.profile.name}\n${sp}${year}年${month}月15日`;
 
   return body;
 }
@@ -741,26 +736,21 @@ function 生成后期模板(素材, 人物, 阶段, 版本, 工作详情) {
   const year = document.getElementById('selectYear').value;
   const month = document.getElementById('selectMonth').value;
   const 开头 = 选句('开头', null, 版本, {});
+  const sp = '　　';
 
-  let body = `思想汇报\n\n敬爱的党组织：\n\n${开头}\n\n`;
-
-  // 阶段3：4段式结构
-  body += `一、对时政的深入理解\n\n`;
-  body += 生成段落_时政引用(素材.news, 阶段) + '\n\n';
-  body += 生成段落_讲话引用(素材.speeches, 阶段) + '\n\n';
-  body += 生成段落_精神引用(素材.spirits, 阶段);
-
-  body += `\n\n二、结合工作实践的反思与体会\n\n`;
-  body += 生成段落_工作结合(人物, 工作详情, 阶段);
-
-  body += `\n\n三、将党性修养融入本职工作的路径思考\n\n`;
-  body += 生成段落_自我剖析(人物, 阶段);
-
-  body += `\n\n四、自我剖析与提升计划\n\n`;
+  let body = `思想汇报\n\n敬爱的党组织：\n\n${开头}\n`;
+  body += `一、对时政的深入理解\n`;
+  body += 生成段落_时政引用(素材.news, 阶段) + '\n';
+  body += 生成段落_讲话引用(素材.speeches, 阶段) + '\n';
+  body += 生成段落_精神引用(素材.spirits, 阶段) + '\n';
+  body += `二、结合工作实践的反思与体会\n`;
+  body += 生成段落_工作结合(人物, 工作详情, 阶段) + '\n';
+  body += `三、将党性修养融入本职工作的路径思考\n`;
+  body += 生成段落_自我剖析(人物, 阶段) + '\n';
+  body += `四、自我剖析与提升计划\n`;
   body += 生成段落_努力方向(阶段);
-
   body += `\n\n${生成段落_结尾(阶段)}\n\n`;
-  body += `汇报人：${人物.profile.name}\n${year}年${month}月15日`;
+  body += `${sp}汇报人：${人物.profile.name}\n${sp}${year}年${month}月15日`;
 
   return body;
 }
@@ -939,7 +929,7 @@ function 生成扩充段落(阶段, 需要字数) {
     accumulated += countChineseChars(text);
   }
 
-  return added.join('\n\n');
+  return added.join('\n');
 }
 
 function 内容去AI化(内容) {
@@ -951,7 +941,7 @@ function 内容去AI化(内容) {
     for (let i = 1; i < sections.length; i++) {
       if (Math.random() < 0.6) {
         const 过渡句 = 选句简单('过渡句');
-        if (过渡句) sections[i] = '\n' + 过渡句 + '\n\n' + sections[i].trim();
+        if (过渡句) sections[i] = '\n' + 过渡句 + '\n' + sections[i].trim();
       }
     }
     result = sections.join('\n');
@@ -978,7 +968,7 @@ function 确保格式合规(内容) {
   }
 
   // 移除签名后的多余内容
-  const sigPattern = /(汇报人：[^\n]*\n\d{4}年\d{1,2}月)[\s\S]*$/;
+  const sigPattern = /(汇报人：[^\n]*\n[\s　]*\d{4}年\d{1,2}月\d{1,2}日)[\s\S]*$/;
   const match = result.match(sigPattern);
   if (match && match.index !== undefined) {
     const expectedEnd = match.index + match[1].length;
