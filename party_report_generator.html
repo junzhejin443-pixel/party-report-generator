@@ -364,7 +364,7 @@
 
     <footer>
       <p>本工具仅供学习参考，思想汇报内容请结合实际情况修改使用</p>
-      <p style="margin-top:4px;font-size:11px;color:#bbb;">v2.1.0 · build 20260720-8</p>
+      <p style="margin-top:4px;font-size:11px;color:#bbb;">v2.1.0 · build 20260720-9</p>
     </footer>
   </div>
 
@@ -391,7 +391,7 @@ function saveStorage(data) {
 
 let currentReports = [];
 let currentVersionIndex = 0;
-let selectedMaterials = { news: [], speeches: [], spirits: [] };
+let selectedMaterials = { news: [], speech: [], spirit: [] };
 
 // ==================== SECTION 1: 静态素材库 ====================
 const 时事新闻库 = [
@@ -1202,7 +1202,7 @@ async function enrichMaterialsWithAI() {
 
     // 存入 enrichedLibrary
     const storage = getStorage();
-    if (!storage.enrichedLibrary) storage.enrichedLibrary = { news: [], speeches: [], spirits: [] };
+    if (!storage.enrichedLibrary) storage.enrichedLibrary = { news: [], speech: [], spirit: [] };
     mergeLibraryItems(storage.enrichedLibrary.news, newNews);
     mergeLibraryItems(storage.enrichedLibrary.speeches, newSpeeches);
     mergeLibraryItems(storage.enrichedLibrary.spirits, newSpirits);
@@ -1415,8 +1415,8 @@ function hideMaterialSelection() {
 // ==================== SECTION 11: 主生成函数 ====================
 async function generateReports() {
   if (selectedMaterials.news.length === 0) { alert('请至少选择1条时事新闻！'); return; }
-  if (selectedMaterials.speeches.length === 0) { alert('请至少选择1条领导讲话！'); return; }
-  if (selectedMaterials.spirits.length === 0) { alert('请至少选择1条党的精神提法！'); return; }
+  if (selectedMaterials.speech.length === 0) { alert('请至少选择1条领导讲话！'); return; }
+  if (selectedMaterials.spirit.length === 0) { alert('请至少选择1条党的精神提法！'); return; }
 
   const storage = getStorage();
   const year = document.getElementById('selectYear').value;
@@ -1439,8 +1439,8 @@ async function generateReports() {
   const allSpirits = getMergedLibrary(党的精神提法库, 'spirits');
 
   const selectedNews = selectedMaterials.news.map(id => allNews.find(n => n.id === id)).filter(Boolean);
-  const selectedSpeeches = selectedMaterials.speeches.map(id => allSpeeches.find(s => s.id === id)).filter(Boolean);
-  const selectedSpirits = selectedMaterials.spirits.map(id => allSpirits.find(s => s.id === id)).filter(Boolean);
+  const selectedSpeeches = selectedMaterials.speech.map(id => allSpeeches.find(s => s.id === id)).filter(Boolean);
+  const selectedSpirits = selectedMaterials.spirit.map(id => allSpirits.find(s => s.id === id)).filter(Boolean);
 
   const 素材 = { news: selectedNews, speeches: selectedSpeeches, spirits: selectedSpirits };
   const 人物 = { profile: storage.profile || {} };
@@ -1504,7 +1504,7 @@ async function generateReports() {
   saveStorage(storage);
 
   document.getElementById('historySection').style.display = 'none';
-  selectedMaterials = { news: [], speeches: [], spirits: [] };
+  selectedMaterials = { news: [], speech: [], spirit: [] };
   hideMaterialSelection();
 }
 
