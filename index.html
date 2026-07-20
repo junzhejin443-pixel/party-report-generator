@@ -1287,7 +1287,7 @@ function renderMaterialSelection(month) {
     const isAI = news.id && news.id.startsWith('ai_');
     return `
     <label class="checkbox-item" data-type="news" data-id="${news.id}">
-      <input type="checkbox" value="${news.id}" onclick="toggleMaterial(event, 'news', '${news.id}')">
+      <input type="checkbox" value="${news.id}" onchange="toggleMaterial(this, 'news', '${news.id}')">
       <div class="item-content">
         <div class="item-title">[${news.分类 || '综合'}] ${news.标题}${isAI ? ' 🤖' : ''}</div>
         <div class="item-desc">${news.摘要}</div>
@@ -1303,7 +1303,7 @@ function renderMaterialSelection(month) {
     const badge = score > 5 ? ' <span style="color:#c41230;font-size:11px;">★推荐</span>' : '';
     return `
     <label class="checkbox-item" data-type="speech" data-id="${speech.id}">
-      <input type="checkbox" value="${speech.id}" onclick="toggleMaterial(event, 'speech', '${speech.id}')">
+      <input type="checkbox" value="${speech.id}" onchange="toggleMaterial(this, 'speech', '${speech.id}')">
       <div class="item-content">
         <div class="item-title">${speech.来源}${badge}${isAI ? ' 🤖' : ''}</div>
         <div class="item-desc">"${speech.讲话}"</div>
@@ -1319,7 +1319,7 @@ function renderMaterialSelection(month) {
     const badge = score > 5 ? ' <span style="color:#c41230;font-size:11px;">★推荐</span>' : '';
     return `
     <label class="checkbox-item" data-type="spirit" data-id="${spirit.id}">
-      <input type="checkbox" value="${spirit.id}" onclick="toggleMaterial(event, 'spirit', '${spirit.id}')">
+      <input type="checkbox" value="${spirit.id}" onchange="toggleMaterial(this, 'spirit', '${spirit.id}')">
       <div class="item-content">
         <div class="item-title">${spirit.名称}${badge}${isAI ? ' 🤖' : ''}</div>
         <div class="item-desc">${(spirit.描述 || '').substring(0, 60)}...</div>
@@ -1328,30 +1328,24 @@ function renderMaterialSelection(month) {
   }).join('');
 }
 
-function toggleMaterial(event, type, id) {
-  event.preventDefault(); // 阻止浏览器默认勾选行为，完全由我们控制
-
-  const container = event.currentTarget; // label 元素本身
-  const checkbox = container.querySelector('input');
+function toggleMaterial(checkbox, type, id) {
+  const container = checkbox.closest('.checkbox-item');
   const maxSelect = 3;
   const list = selectedMaterials[type];
 
-  if (container.classList.contains('checked')) {
-    // 当前已选中 → 取消勾选
-    container.classList.remove('checked');
-    checkbox.checked = false;
-    selectedMaterials[type] = list.filter(i => i !== id);
-  } else {
-    // 当前未选中 → 勾选
+  if (checkbox.checked) {
+    // 用户勾选
     if (list.length >= maxSelect) {
       alert(`最多只能选择${maxSelect}条！`);
+      checkbox.checked = false;
       return;
     }
-    container.classList.add('checked');
-    checkbox.checked = true;
-    if (!list.includes(id)) {
-      selectedMaterials[type].push(id);
-    }
+    if (!list.includes(id)) list.push(id);
+    if (container) container.classList.add('checked');
+  } else {
+    // 用户取消勾选
+    selectedMaterials[type] = list.filter(i => i !== id);
+    if (container) container.classList.remove('checked');
   }
 }
 
