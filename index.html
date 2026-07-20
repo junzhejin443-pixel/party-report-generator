@@ -364,7 +364,7 @@
 
     <footer>
       <p>本工具仅供学习参考，思想汇报内容请结合实际情况修改使用</p>
-      <p style="margin-top:4px;font-size:11px;color:#bbb;">v2.1.0 · build 20260720-7</p>
+      <p style="margin-top:4px;font-size:11px;color:#bbb;">v2.1.0 · build 20260720-8</p>
     </footer>
   </div>
 
@@ -1303,9 +1303,8 @@ function renderMaterialSelection(month) {
   }).join('');
   // 事件委托：监听新闻勾选
   newsContainer.onclick = function(e) {
-    const item = e.target.closest('.checkbox-item');
+    const item = e.target.closest(".checkbox-item"); console.log("click", item?.dataset?.type, item?.dataset?.id);
     if (!item) return;
-    e.preventDefault();
     const type = item.dataset.type;
     const id = item.dataset.id;
     const maxSelect = 3;
@@ -1337,9 +1336,8 @@ function renderMaterialSelection(month) {
   }).join('');
   // 事件委托：监听讲话勾选
   speechContainer.onclick = function(e) {
-    const item = e.target.closest('.checkbox-item');
+    const item = e.target.closest(".checkbox-item"); console.log("click", item?.dataset?.type, item?.dataset?.id);
     if (!item) return;
-    e.preventDefault();
     const type = item.dataset.type;
     const id = item.dataset.id;
     const maxSelect = 3;
@@ -1371,9 +1369,8 @@ function renderMaterialSelection(month) {
   }).join('');
   // 事件委托：监听精神提法勾选
   spiritContainer.onclick = function(e) {
-    const item = e.target.closest('.checkbox-item');
+    const item = e.target.closest(".checkbox-item"); console.log("click", item?.dataset?.type, item?.dataset?.id);
     if (!item) return;
-    e.preventDefault();
     const type = item.dataset.type;
     const id = item.dataset.id;
     const maxSelect = 3;
