@@ -364,7 +364,7 @@
 
     <footer>
       <p>本工具仅供学习参考，思想汇报内容请结合实际情况修改使用</p>
-      <p style="margin-top:4px;font-size:11px;color:#bbb;">v2.1.0 · build 20260720-11</p>
+      <p style="margin-top:4px;font-size:11px;color:#bbb;">v2.1.0 · build 20260720-12</p>
     </footer>
   </div>
 
@@ -392,6 +392,16 @@ function saveStorage(data) {
 let currentReports = [];
 let currentVersionIndex = 0;
 let selectedMaterials = { news: [], speech: [], spirit: [] };
+
+// Fisher-Yates 洗牌
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 // ==================== SECTION 1: 静态素材库 ====================
 const 时事新闻库 = [
@@ -696,6 +706,7 @@ function 生成初期模板(素材, 人物, 阶段, 版本, 工作详情) {
   const sp = '　　'; // 全角空格，用于签名右对齐
 
   // 标题 → 空行 → 称谓 → 空行 → 正文
+  const 月份语境 = getMonthContext(month);
   let body = `思想汇报\n\n敬爱的党组织：\n\n${开头}\n`;
   body += `一、学习体会\n`;
   body += 生成段落_时政引用(素材.news, 阶段) + '\n';
@@ -787,6 +798,25 @@ function getStageInfo() {
   }
 
   return { stage, name: stageName, desc: stageDesc, reportNumber };
+const 月份语境库 = {
+  1: ["新年伊始", "万象更新之际", "新的一年开启之时"],
+  2: ["春回大地", "辞旧迎新之后", "早春二月"],
+  3: ["阳春三月", "春暖花开时节", "两会召开之际"],
+  4: ["暮春四月", "春意盎然之时", "万物生长之际"],
+  5: ["初夏五月", "劳动光荣之月", "青春奋斗时节"],
+  6: ["盛夏六月", "年中奋进之时", "半年总结之际"],
+  7: ["七月流火", "建党纪念之月", "红色七月"],
+  8: ["八月未央", "盛夏时节", "全面深化改革的八月"],
+  9: ["金秋九月", "秋高气爽之时", "丰收在望的九月"],
+  10: ["金秋十月", "国庆之际", "举国欢庆之时"],
+  11: ["深秋十一月", "年终冲刺之时", "岁末将至"],
+  12: ["隆冬十二月", "岁末年终", "辞旧迎新之际"]
+};
+
+function getMonthContext(month) {
+  const variants = 月份语境库[parseInt(month)] || 月份语境库[1];
+  return variants[Math.floor(Math.random() * variants.length)];
+}
 }
 
 function updateStageDisplay() {
@@ -1457,9 +1487,21 @@ async function generateReports() {
     });
   }
 
-  // 生成多版本
-  for (const strategy of usedStrategies) {
-    const content = 生成版本(strategy, deduped, 人物, stageInfo, 工作详情, wordCount);
+  // 生成多版本，每版用不同素材子集 + 不同顺序，核心内容差异化
+  for (let vi = 0; vi < usedStrategies.length; vi++) {
+    const strategy = usedStrategies[vi];
+    // 每版随机丢弃1条素材（保持差异），并打乱顺序
+    const takeRandom = (arr, min) => {
+      const s = shuffle(arr);
+      const take = Math.max(min, arr.length - 1); // 至少保留 min 条，最多丢1条
+      return s.slice(0, Math.min(take, arr.length));
+    };
+    const variedMat = {
+      news: takeRandom(deduped.news, 1),
+      speeches: takeRandom(deduped.speeches, 1),
+      spirits: takeRandom(deduped.spirits, 1)
+    };
+    const content = 生成版本(strategy, variedMat, 人物, stageInfo, 工作详情, wordCount);
     currentReports.push({
       version: strategy.名称,
       desc: strategy.描述,
